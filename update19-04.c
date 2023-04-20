@@ -180,8 +180,6 @@ int main()
         if (selected == 10) break;
     }
 
-   
-    if (highlight == 1) endwin();    // acaba o programa
 
     clear();
 
