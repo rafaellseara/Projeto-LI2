@@ -143,6 +143,48 @@ int main()
 
     getmaxyx(stdscr, linhas, colunas); // ve o maximo de linhas e colunas da janela do terminal
 
+    int start_y = linhas/2 - 10, start_x = colunas/2 - 20;
+    WINDOW * win = newwin(20, 40, start_y, start_x);
+    box(win, 0, 0);
+    refresh();
+    wrefresh(win);
+
+    keypad(win, true);
+
+    char option[2][30] = {"COMECAR NOVO JOGO!", "QUERO SER DESAFIADO :D"};
+    int selected;
+    int highlight = 0;
+
+    while(1){
+        for (int i = 0; i < 2; i++){
+            if (i == highlight) wattron(win, A_REVERSE);
+            mvwprintw(win, 8+i, 10, option[i]);
+            wattroff(win, A_REVERSE);
+        }
+        selected = wgetch(win);
+
+        switch (selected)
+        {
+        case KEY_UP:
+            highlight--;
+            if (highlight == -1) highlight = 0;
+            break;
+        case KEY_DOWN:
+            highlight++;
+            if (highlight == 2) highlight = 1;
+            break;
+        default:
+            break;
+        }
+
+        if (selected == 10) break;
+    }
+
+   
+    if (highlight == 1) endwin();    // acaba o programa
+
+    clear();
+
     Map mapa[linhas][colunas]; // iniciando um mapa
 
     do_create_map(linhas, colunas, mapa); // aqui criamos o mapa
