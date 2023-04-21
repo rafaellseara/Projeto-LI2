@@ -279,6 +279,53 @@ int main()
     curs_set(0);          // esconde o cursor
 
     getmaxyx(stdscr, linhas, colunas); // ve o maximo de linhas e colunas da janela do terminal
+    
+    // cria uma janela inicial para que o menu.
+    int start_y = linhas/2 - 10, start_x = colunas/2 - 20;
+    WINDOW * win = newwin(20, 40, start_y, start_x);   
+    box(win, 0, 0);
+    refresh();
+    wrefresh(win);
+
+    keypad(win, true);   // ativa as arrow keys
+
+    // Estas são as opções do menu
+    char option[2][30] = {"  COMECAR NOVO JOGO!  ",
+                          "QUERO SER DESAFIADO :D"};
+    int selected;
+    int highlight = 0;
+
+    /*
+    Loop while que verifica a tecla que o utlizador clica e faz o highlight da opção desejada. 
+    No entanto, não deixa o utilizador dar highlight em algo que não é suposto. 
+    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção
+    */
+    while(1){
+        for (int i = 0; i < 2; i++){
+            if (i == highlight) wattron(win, A_REVERSE);
+            mvwprintw(win, 8+i, 10, option[i]);
+            wattroff(win, A_REVERSE);
+        }
+        selected = wgetch(win);
+
+        switch (selected)
+        {
+        case KEY_UP:
+            highlight--;
+            if (highlight == -1) highlight = 0;
+            break;
+        case KEY_DOWN:
+            highlight++;
+            if (highlight == 2) highlight = 1;
+            break;
+        default:
+            break;
+        }
+
+        if (selected == 10) break;
+    }
+
+    clear();  // faz clear no terminal
 
     Map mapa[linhas][colunas]; // iniciando um mapa
 
