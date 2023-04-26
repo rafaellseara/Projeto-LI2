@@ -1009,7 +1009,7 @@ int main()
     refresh();
 
     // para iniciar cores
-    //start_color();
+    start_color();
 
     keypad(stdscr, true); // ativa as keypads
     noecho();             // nao aparece input do utilizador
