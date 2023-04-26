@@ -1004,8 +1004,6 @@ void scoreboard (int linhas, int colunas){
     wrefresh(win_score);
 }
 
-
-
 void final_win (int linhas, int colunas,int score){
     echo();
     int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
@@ -1054,9 +1052,86 @@ void final_win (int linhas, int colunas,int score){
     fclose(file_score);
 }
 
+void multi_jogo_win (int linhas, int colunas, Map mapa[][colunas]){
+
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
+    WINDOW* win_jogo = newwin(20, 40, start_y, start_x);
+    box(win_jogo,0,0);
+    refresh();
+    wrefresh(win_jogo);
+
+    char c;
+    int selected;
+    int highlight = 0;
+    int loop = 1;
+
+    const char option1[30] = " - SINGLEPLAYER   ";
+    const char option2[30] = " - MULTIPLAYER    ";
+
+    keypad(win_jogo, true);
+
+    while (loop == 1)
+    {
+        box(win_jogo,0,0);
+        for (int i = 0; i < 2; i++)
+        {
+            if (i == highlight)
+                wattron(win_jogo, A_REVERSE);
+            switch (i)
+            {
+            case 0:
+                mvwprintw(win_jogo, 8 + i, 10, option1);
+                break;
+            case 1:
+                mvwprintw(win_jogo, 9 + i, 10, option2);
+                break;
+            }
+            wattroff(win_jogo, A_REVERSE);
+        }
+
+        selected = wgetch(win_jogo);
+
+        switch (selected)
+        {
+        case KEY_UP:
+            highlight--;
+            if (highlight == -1)
+                highlight = 0;
+            break;
+        case KEY_DOWN:
+            highlight++;
+            if (highlight == 2)
+                highlight = 1;
+            break;
+        }
+
+        if (selected == 10)
+        {
+            switch (highlight)
+            {
+            case 0:
+                c = 'w';
+                clear();
+                start_game(linhas, colunas, mapa); // iniciamos o jogo
+                while (c != 27)                    // este ciclo funciona como input do user, sai ao carregar no ESC = 27 ASCII
+                {
+                    c = getch();                         // recebe o input do user (key pad nao está a funcionar ???)
+                    main_game(c, linhas, colunas, mapa); // damos update ao jogo
+                }
+                clear();
+                refresh();
+                loop = 0;
+                break;
+            case 1:
+
+                break;;
+            }
+        }
+    }
+}
+
 int main()
 {
-    char c;
     int linhas, colunas; // para definir o tamanho do mapa
     srand(time(NULL));   // funçao random com a seed do tempo para randomizar ainda mais
 
@@ -1167,16 +1242,7 @@ int main()
                 refresh();
                 break;
             case 1:
-                c = 'w';
-                clear();
-                start_game(linhas, colunas, mapa); // iniciamos o jogo
-                while (c != 27)                    // este ciclo funciona como input do user, sai ao carregar no ESC = 27 ASCII
-                {
-                    c = getch();                         // recebe o input do user (key pad nao está a funcionar ???)
-                    main_game(c, linhas, colunas, mapa); // damos update ao jogo
-                }
-                clear();
-                refresh();
+                multi_jogo_win(linhas, colunas, mapa);
                 break;
             case 2:
 
