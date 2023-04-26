@@ -1086,8 +1086,9 @@ int main()
     // Estas são as opções do menu
     const char option1[30] = "  COMECAR NOVO JOGO!  ";
     const char option2[30] = "QUERO SER DESAFIADO :D";
-    const char option3[30] = "     SCOREBOARD!      ";
-    const char option4[30] = "      EXIT GAME       ";
+    const char option3[30] = " MANUAL DE INSTRUCOES ";
+    const char option4[30] = "     SCOREBOARD!      ";
+    const char option5[30] = "      EXIT GAME       ";
     int selected;
     int highlight = 0;
     int loop = 1; // variavel para o loop do jogo (loop = 0 -> acaba o jogo, loop = 1 -> menu, loop = 2 -> jogo, loop = 3 -> scoreboard)
@@ -1112,23 +1113,26 @@ int main()
     while (loop == 1)
     {
         box(win, 0, 0);
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             if (i == highlight)
                 wattron(win, A_REVERSE);
             switch (i)
             {
             case 0:
-                mvwprintw(win, 8 + i, 10, option1);
+                mvwprintw(win, 7 + i, 10, option1);
                 break;
             case 1:
-                mvwprintw(win, 8 + i, 10, option2);
+                mvwprintw(win, 7 + i, 10, option2);
                 break;
             case 2:
-                mvwprintw(win, 8 + i, 10, option3);
+                mvwprintw(win, 7 + i, 10, option3);
                 break;
             case 3:
-                mvwprintw(win, 8 + i, 10, option4);
+                mvwprintw(win, 7 + i, 10, option4);
+                break;
+            case 4:
+                mvwprintw(win, 7 + i, 10, option5);
                 break;
             }
             wattroff(win, A_REVERSE);
@@ -1145,8 +1149,8 @@ int main()
             break;
         case KEY_DOWN:
             highlight++;
-            if (highlight == 4)
-                highlight = 3;
+            if (highlight == 5)
+                highlight = 4;
             break;
         }
 
@@ -1175,6 +1179,9 @@ int main()
                 refresh();
                 break;
             case 2:
+
+                break;
+            case 3:
                 while (true) {
                     scoreboard(linhas, colunas);
                     int selected = getch();
@@ -1183,8 +1190,8 @@ int main()
                 clear();
                 refresh();
                 break;
-        
-            case 3:
+                break;
+            case 4:
                 loop = 0; // para sair do loop
                 break;
             }
