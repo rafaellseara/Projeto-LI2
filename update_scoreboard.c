@@ -1127,6 +1127,7 @@ void multi_jogo_win (int linhas, int colunas, Map mapa[][colunas]){
                 break;;
             }
         }
+        if (selected == 27) loop = 0;
     }
 }
 
