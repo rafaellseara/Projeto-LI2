@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <ctype.h>
+
 
 /*
     CASA LIFE E LAGO APARECEM NO MESMO SITIO - VERIFICAR
@@ -977,26 +979,79 @@ void scoreboard (int linhas, int colunas){
     int score;
     int i = 0;
 
-    while (fscanf(file_score,"%s %d", name, &score) != EOF){
-        if(i%2 == 0){
-            wattron(win_score, A_REVERSE);
-            for (int j = 0; j < colunas-6; j++){
-                mvwprintw(win_score, i+1, j+1, " ");
+    if (file_score != NULL){
+        while (fscanf(file_score,"%s %d", name, &score) != EOF){
+            if(i%2 == 0){
+                wattron(win_score, A_REVERSE);
+                for (int j = 0; j < colunas-6; j++){
+                    mvwprintw(win_score, i+1, j+1, " ");
+                }
+                mvwprintw(win_score, i+1, 1, "%s", name);
+                int nDigits = floor(log10(abs(score))) + 1;
+                mvwprintw(win_score, i+1, colunas-5-nDigits, "%d", score);
+                wattroff(win_score,A_REVERSE);
             }
-            mvwprintw(win_score, i+1, 1, "%s", name);
-            int nDigits = floor(log10(abs(score))) + 1;
-            mvwprintw(win_score, i+1, colunas-5-nDigits, "%d", score);
-            wattroff(win_score,A_REVERSE);
-        }
-        else{
-            mvwprintw(win_score, i+1, 1, "%s", name);
-            int nDigits = floor(log10(abs(score))) + 1;
-            mvwprintw(win_score, i+1, colunas-5-nDigits, "%d", score);
-        }
+            else{
+                mvwprintw(win_score, i+1, 1, "%s", name);
+                int nDigits = floor(log10(abs(score))) + 1;
+                mvwprintw(win_score, i+1, colunas-5-nDigits, "%d", score);
+            }
         i++;
+        }
     }
+
     fclose(file_score);
     wrefresh(win_score);
+}
+
+
+
+void final_win (int linhas, int colunas,int score){
+    echo();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
+    WINDOW* win_final = newwin(20, 40, start_y, start_x);
+    box(win_final,0,0);
+
+    FILE* file_score;
+    file_score = fopen("scoreboard_file.txt","a");
+
+    char nome[28] = {0};
+
+    wattron(win_final, A_BOLD);
+    mvwprintw(win_final, 6, 17, "LOSER!");
+    wattroff(win_final, A_BOLD);
+    mvwprintw(win_final, 8, 6, "A TUA PONTUACAO FOI DE %d", score);
+    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
+    wrefresh(win_final);
+
+    WINDOW* win_nome = newwin (3,30, start_y + 12, start_x + 5);
+    box(win_nome,0,0);
+    move(start_y + 13,start_x + 6);
+    wrefresh(win_nome);
+
+    int check = 0;
+
+    for (int i = 0; i < 28; i++) {
+    char selected = getch();
+    if (selected == 10) {
+        check = 1;
+        break;
+    } else if (i < 27 && isprint(selected)) {
+        nome[i] = selected;
+    }
+}
+    noecho();
+    wrefresh(win_nome);
+
+    if (check == 0){
+        while (true){
+            char selected = getch();
+            if (selected == 10) break;
+        }
+    }
+    
+    if(file_score != NULL) fprintf(file_score, "\n%s %d",nome,score);
+    fclose(file_score);
 }
 
 int main()
@@ -1009,7 +1064,7 @@ int main()
     refresh();
 
     // para iniciar cores
-    start_color();
+    //start_color();
 
     keypad(stdscr, true); // ativa as keypads
     noecho();             // nao aparece input do utilizador
@@ -1056,43 +1111,43 @@ int main()
     */
     while (loop == 1)
     {
-        if (loop == 1){
-            for (int i = 0; i < 4; i++)
+        box(win, 0, 0);
+        for (int i = 0; i < 4; i++)
+        {
+            if (i == highlight)
+                wattron(win, A_REVERSE);
+            switch (i)
             {
-                if (i == highlight)
-                    wattron(win, A_REVERSE);
-                switch (i)
-                {
-                case 0:
-                    mvwprintw(win, 8 + i, 10, option1);
-                    break;
-                case 1:
-                    mvwprintw(win, 8 + i, 10, option2);
-                    break;
-                case 2:
-                    mvwprintw(win, 8 + i, 10, option3);
-                    break;
-                case 3:
-                    mvwprintw(win, 8 + i, 10, option4);
-                    break;
-                }
-                wattroff(win, A_REVERSE);
+            case 0:
+                mvwprintw(win, 8 + i, 10, option1);
+                break;
+            case 1:
+                mvwprintw(win, 8 + i, 10, option2);
+                break;
+            case 2:
+                mvwprintw(win, 8 + i, 10, option3);
+                break;
+            case 3:
+                mvwprintw(win, 8 + i, 10, option4);
+                break;
             }
-            selected = wgetch(win);
+            wattroff(win, A_REVERSE);
+        }
 
-            switch (selected)
-            {
-            case KEY_UP:
-                highlight--;
-                if (highlight == -1)
-                    highlight = 0;
-                break;
-            case KEY_DOWN:
-                highlight++;
-                if (highlight == 4)
-                    highlight = 3;
-                break;
-            }
+        selected = wgetch(win);
+
+        switch (selected)
+        {
+        case KEY_UP:
+            highlight--;
+            if (highlight == -1)
+                highlight = 0;
+            break;
+        case KEY_DOWN:
+            highlight++;
+            if (highlight == 4)
+                highlight = 3;
+            break;
         }
 
         if (selected == 10)
@@ -1100,7 +1155,12 @@ int main()
             switch (highlight)
             {
             case 0:
-
+                clear();
+                refresh();
+                int score = 10;
+                final_win(linhas,colunas,score);
+                clear();
+                refresh();
                 break;
             case 1:
                 c = 'w';
