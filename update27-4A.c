@@ -1135,6 +1135,19 @@ void final_win (int linhas, int colunas,int score){
     }
 }
 
+    wrefresh(win_nome);
+
+    if (check == 0){
+        while (true){
+            char selected = getch();
+            if (selected == 10) break;
+        }
+    }
+    
+    if(file_score != NULL) fprintf(file_score, "\n%s %d",nome,score);
+    fclose(file_score);
+}
+
 void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
 {
 
