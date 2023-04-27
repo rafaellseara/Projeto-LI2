@@ -1089,15 +1089,14 @@ void scoreboard(int linhas, int colunas)
     wrefresh(win_score);
 }
 
-void final_win(int linhas, int colunas, int score)
-{
-    echo();
+void final_win (int linhas, int colunas,int score){
+    noecho();
     int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
-    WINDOW *win_final = newwin(20, 40, start_y, start_x);
-    box(win_final, 0, 0);
+    WINDOW* win_final = newwin(20, 40, start_y, start_x);
+    box(win_final,0,0);
 
-    FILE *file_score;
-    file_score = fopen("scoreboard_file.txt", "a");
+    FILE* file_score;
+    file_score = fopen("scoreboard_file.txt","a");
 
     char nome[28] = {0};
 
@@ -1108,42 +1107,32 @@ void final_win(int linhas, int colunas, int score)
     mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
     wrefresh(win_final);
 
-    WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5);
-    box(win_nome, 0, 0);
-    move(start_y + 13, start_x + 6);
+    WINDOW* win_nome = newwin (3,30, start_y + 12, start_x + 5);
+    box(win_nome,0,0);
+    move(start_y + 13,start_x + 6);
     wrefresh(win_nome);
 
     int check = 0;
 
-    for (int i = 0; i < 28; i++)
-    {
-        char selected = getch();
-        if (selected == 10)
-        {
-            check = 1;
-            break;
-        }
-        else if (i < 27 && isprint(selected))
-        {
-            nome[i] = selected;
-        }
+    for (int i = 0; i < 28;) {
+    char selected = getch();
+    if (selected == 10) {
+        check = 1;
+        break;
+    } 
+    else if (i < 27 && isprint(selected)) {
+        nome[i] = selected;
+        mvwprintw(win_nome, 1, i+1, "%c", selected);
+        wrefresh(win_nome);
+        i++;
+    } 
+    else if ((selected == 127) && (i > 0)){
+        i--;
+        nome[i] = ' ';
+        mvwaddch(win_nome, 1, i+1, ' ');
+        wmove(win_nome, 1, i+1);
+        wrefresh(win_nome);
     }
-    noecho();
-    wrefresh(win_nome);
-
-    if (check == 0)
-    {
-        while (true)
-        {
-            char selected = getch();
-            if (selected == 10)
-                break;
-        }
-    }
-
-    if (file_score != NULL)
-        fprintf(file_score, "\n%s %d", nome, score);
-    fclose(file_score);
 }
 
 void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
