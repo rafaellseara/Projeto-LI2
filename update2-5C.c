@@ -1360,6 +1360,96 @@ void scoreboard(int linhas, int colunas)
     wrefresh(win_score);
 }
 
+void final_win (int linhas, int colunas,int score){
+    noecho();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
+    WINDOW* win_final = newwin(20, 40, start_y, start_x);
+    box(win_final,0,0);
+
+    FILE* file_score;
+    file_score = fopen("scoreboard_file.txt","a");
+
+    char nome[28] = {0};
+
+    wattron(win_final, A_BOLD);
+    mvwprintw(win_final, 6, 17, "LOSER!");
+    wattroff(win_final, A_BOLD);
+    mvwprintw(win_final, 8, 8, "A TUA PONTUACAO FOI DE %d", score);
+    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
+    wrefresh(win_final);
+
+    WINDOW* win_nome = newwin (3,30, start_y + 12, start_x + 5);
+    box(win_nome,0,0);
+    move(start_y + 13,start_x + 6);
+    wrefresh(win_nome);
+
+    int check = 0;
+
+    for (int i = 0; i < 28;) {
+    char selected = getch();
+    if (selected == 10) {
+        check = 1;
+        break;
+    } 
+    else if (i < 27 && isprint(selected)) {
+        nome[i] = selected;
+        mvwprintw(win_nome, 1, i+1, "%c", selected);
+        wrefresh(win_nome);
+        i++;
+    } 
+    else if ((selected == 127) && (i > 0)){
+        i--;
+        nome[i] = ' ';
+        mvwaddch(win_nome, 1, i+1, ' ');
+        wmove(win_nome, 1, i+1);
+        wrefresh(win_nome);
+    }
+}
+
+    wrefresh(win_nome);
+
+    if (check == 0){
+        while (true){
+            char selected = getch();
+            if (selected == 10) break;
+        }
+    }
+    
+    if(file_score != NULL) fprintf(file_score, "\n%s %d",nome,score);
+    fclose(file_score);
+}
+/*
+função que imprime a janela de pausa no ecrã assim que o utilizador pressiona na tecla p para pausar o jogo.
+Esta desaparece assim que o utilizador carrega na tecla enter.
+*/
+void pause_win(int linhas, int colunas){
+    int start_y = linhas / 2 - 15, start_x = colunas / 2 - 30;  // cordenadas inicias
+    WINDOW* win_pause = newwin(30, 60, start_y, start_x);  // criação da janela desejada
+    box(win_pause,0,0);  // box à volta da janela
+    refresh();
+    wrefresh(win_pause);
+    /*
+    O processo seguinte imprime para o ecrã a msg que é necessária.
+    Neste caso imprimime-se duas frases com o atributo de BOLD e uma frase com o atributo de REVERSE(cores reversas).
+    */
+    wattron(win_pause,A_BOLD);  // atributo bold on
+    mvwprintw(win_pause, 11, 12, "    O MENU DE PAUSA E PARA FRACOS    ");
+    mvwprintw(win_pause, 13, 12, "CARREGA NO BOTAO ENTER PARA CONTINUAR");
+    wattroff(win_pause, A_BOLD);  // atributo bold off
+    wattron(win_pause, A_REVERSE);  // atributo reverse on
+    mvwprintw(win_pause, 17, 18, "        CONTINUAR        ");
+    wattroff(win_pause, A_REVERSE);  // atributo reverse off
+    wrefresh(win_pause);
+    // loop que espera pela tecla enter para continuar
+    while (true){
+        char selected = getch();
+        if (selected == 10) break;
+    }
+    wclear(win_pause);
+    wrefresh(win_pause);
+    refresh();
+}
+
 void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
 {
 
@@ -1419,13 +1509,31 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             switch (highlight)
             {
             case 0:
-                game_over = 0;
+                c = 'w';
                 clear();
                 do_create_map(linhas, colunas, mapa);
-                start_game(linhas, colunas, mapa);   // iniciamos o jogo
-                main_game(c, linhas, colunas, mapa); // damos update ao jogo
+                start_game(linhas, colunas, mapa); // iniciamos o jogo
+                while (c != 27)                    // este ciclo funciona como input do user, sai ao carregar no ESC = 27 ASCII
+                {
+                    c = getch();                         // recebe o input do user (key pad nao está a funcionar ???)
+                    main_game(c, linhas, colunas, mapa); // damos update ao jogo
+                    if (player1.hp == 0) break;
+                    if (c == 'p'){
+                        pause_win(linhas,colunas);
+                        main_game(c, linhas, colunas, mapa);
+                    }
+                }
                 clear();
                 refresh();
+                if (player1.hp == 0){
+                    clear();
+                    refresh();
+                    final_win(linhas, colunas, player1.score);
+                    player1.hp = 100;
+                    player1.score = 0;
+                    clear();
+                    refresh();
+                }
                 loop = 0;
                 break;
             case 1:
@@ -1438,7 +1546,9 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             loop = 0;
     }
 }
-
+/*
+Função main: esta é a função que irá tratar de toda a composição do jogo, desde o input do utilizador até ao detalhe mais pequeno
+*/
 int main()
 {
     char c;
@@ -1493,8 +1603,9 @@ int main()
 
     /*
     Loop while que verifica a tecla que o utlizador clica e faz o highlight da opção desejada.
+    Este tambem imprime todas as opções do menu para a janela.
     No entanto, não deixa o utilizador dar highlight em algo que não é suposto.
-    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção
+    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção (loop = 0)
     */
     while (loop == 1)
     {
@@ -1523,9 +1634,9 @@ int main()
             }
             wattroff(win, A_REVERSE);
         }
-        selected = wgetch(win);
+        selected = wgetch(win);  // tecla premida
 
-        switch (selected)
+        switch (selected)  // switch para dar highlight na opção correta escolhida pelo jogador, não o deixa sair das opções pretendidas
         {
         case KEY_UP:
             highlight--;
@@ -1543,24 +1654,17 @@ int main()
         {
             switch (highlight)
             {
-            case 0:
-                clear();
-                refresh();
-                int score = 10;
-                final_win(linhas, colunas, score);
-                clear();
-                refresh();
+            case 0: // Opção "COMECAR NOVO JOGO!"
+                multi_jogo_win(linhas, colunas, mapa);  // inicia a janela de singleplayer/multiplayer
                 break;
-            case 1:
-                multi_jogo_win(linhas, colunas, mapa);
+            case 1: // Opção "QUERO SER DESAFIADO :D"
                 break;
-            case 2:
-
+            case 2: // Opção "MANUAL DE INSTRUCOES"
                 break;
-            case 3:
+            case 3: // Opção "SCOREBOARD!"
                 while (true)
                 {
-                    scoreboard(linhas, colunas);
+                    scoreboard(linhas, colunas);  // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
                     int selected = getch();
                     if (selected == 27)
                         break;
@@ -1569,7 +1673,7 @@ int main()
                 refresh();
                 break;
                 break;
-            case 4:
+            case 4: // Opção "EXIT GAME"
                 loop = 0; // para sair do loop
                 break;
             }
