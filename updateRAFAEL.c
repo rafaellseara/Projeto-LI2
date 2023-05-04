@@ -13,7 +13,6 @@
         Player X ganhou o jogo, o Player Y vai ter de pagar o jantar
     Criar scoreboard para jogo facil e dificil
     No challenge ele sai do jogo imediatamente ao clicar em esc - fix it
-
 */
 
 typedef struct player
@@ -225,7 +224,7 @@ void do_guns_aplications(char c, char player1_last_direction_moved, int colunas,
     change_player_weapon(c);
     bullet_position();
     bulletshow(c, player1_last_direction_moved);
-    createbullet(c);
+    createbullet();
     bullet_collision(colunas, mapa);
     do_player_punch(c, player1_last_direction_moved);
     if (bullet.positionX == mob_positionX && bullet.positionY == mob_positionY)
@@ -896,7 +895,7 @@ void do_concat_walls(int linhas, int colunas, Map mapa[][colunas])
 }
 
 /*
-função que imprime a janela de pausa no ecrã assim que o utilizador pressiona na tecla p para pausar o jogo.
+Função que imprime a janela de pausa no ecrã assim que o utilizador pressiona na tecla p para pausar o jogo.
 Esta desaparece assim que o utilizador carrega na tecla enter.
 */
 void pause_win(int linhas, int colunas)
@@ -1254,48 +1253,88 @@ void do_check_nightstick()
         }
     }
 }
-void final_win(int linhas, int colunas, int score)
-{
-    noecho();
-    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
-    WINDOW *win_final = newwin(20, 40, start_y, start_x);
-    box(win_final, 0, 0);
+/*
+Função que imprime a janela final do jogo de score 0 no ecrã assim que o utilizado perde (hp = 0)
+Esta desaparece assim que o utilizador carrega na tecla enter.
+*/
+void final_0_score_win(int linhas, int colunas){
 
-    FILE *file_score;
-    file_score = fopen("scoreboard_file.txt", "a");
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;  // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);       // criação da janela desejada
+    box(win_final, 0, 0);                                       // box à volta da janela
 
-    char nome[28] = {0};
-
-    wattron(win_final, A_BOLD);
-    mvwprintw(win_final, 6, 17, "LOSER!");
-    wattroff(win_final, A_BOLD);
-    mvwprintw(win_final, 8, 6, "A TUA PONTUACAO FOI DE %d", score);
-    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
+    wattron(win_final, A_BOLD);  // atributo bold on
+    mvwprintw(win_final,  7, 5, "       0 PONTOS? LOSER!      ");
+    wattroff(win_final, A_BOLD);  // atributo bold off
+    mvwprintw(win_final,  9, 5, "COM ESSA PONTUACAO NEM MERCES"); 
+    mvwprintw(win_final, 10, 5, "    IR PARA O SCOREBOARD!    ");
     wrefresh(win_final);
 
-    WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5);
-    box(win_nome, 0, 0);
-    move(start_y + 13, start_x + 6);
-    wrefresh(win_nome);
-
-    int check = 0;
-
-    for (int i = 0; i < 28;)
+    wattron(win_final, A_REVERSE); // atributo reverse on
+    mvwprintw(win_final, 13, 8, "        CONTINUAR        ");
+    wattroff(win_final, A_REVERSE); // atributo reverse off
+    wrefresh(win_final);
+    // loop que espera pela tecla enter para continuar
+    while (true)
     {
         char selected = getch();
         if (selected == 10)
+            break;
+    }
+    wclear(win_final);
+    wrefresh(win_final);
+    refresh();
+}
+/*
+Função que imprime a janela final do jogo de score > 0 no ecrã assim que o utilizado perde.
+Esta desaparece assim que o utilizador carrega na tecla enter depois de escolher o nome.
+*/
+void final_win(int linhas, int colunas, int score)
+{
+    noecho();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;  // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);       // criação da janela desejada
+    box(win_final, 0, 0);                                       // box à volta da janela
+
+    FILE *file_score;                                           // criação de um ficheito
+    file_score = fopen("scoreboard_file.txt", "a");             // ficheiro ligado ao txt do scoreboard em mode de escrever (a de append)
+
+    char nome[28] = {0};
+    nome[0] = ' ';
+
+    wattron(win_final, A_BOLD); // atributo bold on
+    mvwprintw(win_final, 6, 17, "LOSER!");
+    wattroff(win_final, A_BOLD); // atributo bold off
+    mvwprintw(win_final, 8, 7, "A TUA PONTUACAO FOI DE %d", score);
+    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
+    wrefresh(win_final);
+
+    WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5); // criação da janela para escrever o nome
+    box(win_nome, 0, 0);                                         // box à volta da janela
+    move(start_y + 13, start_x + 6);                             // move a escrita do nome para o sitio desejado
+    wrefresh(win_nome);
+
+    int check = 0; // variavel para sair da janela
+
+    /*
+    loop que irá escrever o nome para o ecrã como tambem apagar se necessário
+    */
+    for (int i = 0; i < 28;)  //maximo de 28 caracteres
+    {
+        char selected = getch();
+        if ((selected == 10) && (nome[0] != ' ')) // se a tecla selecionda for o enter -> acaba o loop
         {
             check = 1;
             break;
         }
-        else if (i < 27 && isprint(selected))
+        else if (i < 27 && isprint(selected) && !isspace(selected)) // se a tecla selecionada estiver dentro dos parametros -> escreve a no ecra
         {
             nome[i] = selected;
             mvwprintw(win_nome, 1, i + 1, "%c", selected);
             wrefresh(win_nome);
             i++;
         }
-        else if ((selected == 127) && (i > 0))
+        else if ((selected == 127) && (i > 0)) // se a tecla for o backspace -> apaga o ultimo caracter e volta uma casa atras
         {
             i--;
             nome[i] = ' ';
@@ -1307,19 +1346,9 @@ void final_win(int linhas, int colunas, int score)
 
     wrefresh(win_nome);
 
-    if (check == 0)
-    {
-        while (true)
-        {
-            char selected = getch();
-            if (selected == 10)
-                break;
-        }
-    }
-
-    if (file_score != NULL)
-        fprintf(file_score, "\n%s %d", nome, score);
-    fclose(file_score);
+    if (file_score != NULL) // caso o ficheiro seja null
+        fprintf(file_score, "\n%s %d", nome, score);  // imprime no ficheiro o nome e o score
+    fclose(file_score); // fecha o ficheiro
 }
 /*
 funçao que tem todas as propriedades do jogo
@@ -1350,8 +1379,11 @@ void main_game_single_player(char c, int linhas, int colunas, Map mapa[][colunas
             game_over = 1;
             clear();
             refresh();
-            final_win(linhas, colunas, player1.score);
+            if (player1.score > 0) final_win(linhas, colunas, player1.score);
+            if (player1.score == 0) final_0_score_win(linhas, colunas);
             player1.hp = 100;
+            player1.trapNumber = 3;
+            player1.ammo = 100;
             player1.score = 0;
             is_flag_placed = 0;
             piece_in_place = ' ';
@@ -1359,7 +1391,7 @@ void main_game_single_player(char c, int linhas, int colunas, Map mapa[][colunas
     }
 }
 void main_game_multi_player(char c, int linhas, int colunas, Map mapa[][colunas])
-{
+{   
     while (game_over == 0)
     {
         if (player1.hp > 0 && player2.hp > 0)
@@ -1497,25 +1529,33 @@ void scoreboard(int linhas, int colunas)
     fclose(file_score);
     wrefresh(win_score);
 }
-
+/*
+Função que imprime a janela de escolha entre o multiplayer e singleplayer do jogo.
+Assim que o utilizador escolhe uma das opções e carrega no enter a janela fecha. 
+*/
 void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
 {
-
-    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
-    WINDOW *win_jogo = newwin(20, 40, start_y, start_x);
-    box(win_jogo, 0, 0);
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_jogo = newwin(20, 40, start_y, start_x);       // criação da janela desejada
+    box(win_jogo, 0, 0);                                       // box à volta da janela
     refresh();
     wrefresh(win_jogo);
 
     int selected;
     int highlight = 0;
-    int loop = 1;
+    int loop = 1; // variavel para o loop do jogo
 
+    //opções do menu
     const char option1[30] = " - SINGLEPLAYER   ";
     const char option2[30] = " - MULTIPLAYER    ";
 
-    keypad(win_jogo, true);
-
+    keypad(win_jogo, true); // ativa o keypad
+    /*
+    Loop while que verifica a tecla que o utlizador clica e faz o highlight da opção desejada.
+    Este tambem imprime todas as opções do menu para a janela.
+    No entanto, não deixa o utilizador dar highlight em algo que não é suposto.
+    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção (loop = 0)
+    */
     while (loop == 1)
     {
         box(win_jogo, 0, 0);
@@ -1535,9 +1575,9 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             wattroff(win_jogo, A_REVERSE);
         }
 
-        selected = wgetch(win_jogo);
+        selected = wgetch(win_jogo); // tecla premida
 
-        switch (selected)
+        switch (selected) // switch para dar highlight na opção correta escolhida pelo jogador, não o deixa sair das opções pretendidas
         {
         case KEY_UP:
             highlight--;
@@ -1555,7 +1595,7 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
         {
             switch (highlight)
             {
-            case 0:
+            case 0: // Opção "Singleplayer"
                 game_over = 0;
                 clear();
                 refresh();
@@ -1566,7 +1606,7 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
                 refresh();
                 loop = 0;
                 break;
-            case 1:
+            case 1: // Opção "Multiplayer"
                 game_over = 0;
                 clear();
                 refresh();
@@ -1583,7 +1623,11 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             loop = 0;
     }
 }
-
+/*
+Função do menu principal do jogo.
+Imprime o menu assim que o jogo começa.
+Contem uma variadade de opções, as quais podem ser todas acessadas.
+*/
 void menu(int linhas, int colunas, Map mapa[][colunas])
 {
 
@@ -1693,7 +1737,6 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
         }
     }
 }
-
 /*
 Função main: esta é a função que irá tratar de toda a composição do jogo, desde o input do utilizador até ao detalhe mais pequeno
 */
@@ -1706,7 +1749,7 @@ int main()
     refresh();
 
     // para iniciar cores
-    start_color();
+    //start_color();
 
     keypad(stdscr, true); // ativa as keypads
     noecho();             // nao aparece input do utilizador
