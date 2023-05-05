@@ -4,6 +4,7 @@
 #include <time.h>
 #include <math.h>
 #include <ctype.h>
+#include <string.h>
 
 /*
     Ter de refazer as cenas das balas para criar balas de cada jogador
@@ -12,7 +13,6 @@
     Criar uma janela de menu
         Player X ganhou o jogo, o Player Y vai ter de pagar o jantar
     Criar scoreboard para jogo facil e dificil
-    No challenge ele sai do jogo imediatamente ao clicar em esc - fix it
 */
 
 typedef struct player
@@ -61,6 +61,13 @@ typedef struct bullet
     int number;
     int direction;
 } Bullet;
+
+typedef struct scoreboard
+{
+    int counter;
+    char nome[500][30];
+    int score[500];
+} Scoreboard;
 
 Player player1 = {1, 2, 100, 10, 10, 100, 3, 5, 0, 0};
 Player player2 = {2, 2, 100, 20, 20, 100, 3, 5, 0, 0};
@@ -1488,18 +1495,94 @@ void start_game_challenge(int linhas, int colunas, Map mapa[][colunas])
     createlight(player1.positionY,player1.positionX,colunas, linhas, 3);
     print_footer_challenge();
 }
+/*
+função que organiza o scoreboard de forma decrescente
+*/
+void sort_scoreboard ()
+{
+    FILE *file_score;                                // criação de um ficheito
+    file_score = fopen("scoreboard_file.txt", "r");  // ficheiro ligado ao txt do scoreboard em mode de ler (r de reading)
+
+    int score;
+    char nome[30];
+    int i = 0;
+
+    /*
+    Struct para a organização da scoreboard. 
+    Inclui uma lista com os nomes, uma lista com os score, e um conter.
+    */
+    Scoreboard sort_scoreboard;
+    sort_scoreboard.counter = 0;
+
+    if (file_score != NULL){  // caso o ficheiro seja null
+        while (fscanf(file_score, "%s %d", nome, &score) != EOF){ // enquanto que o ficheiro não chega ao final ele continua a pegar em nomes e scores
+            strcpy(sort_scoreboard.nome[i],nome); // copia o nome da linha para a struct
+            sort_scoreboard.score[i] = score; // copia o score da linha para o struct
+            sort_scoreboard.counter++;
+            i++;         
+        }
+    }
+    fclose(file_score); // fecha o ficheiro
+
+    int n = sort_scoreboard.counter;
+    int j, temp_score;
+    char temp_nome[30];
+
+    /*
+    Loop simples que utiliza o metodo de buble sort para ordenar a struct de maneira decrescente
+    */
+    for (i = 0; i < n-1; i++)
+    {
+        for (j = 0; j < n-i-1; j++)
+        {
+            if (sort_scoreboard.score[j] < sort_scoreboard.score[j+1])
+            {
+                // troca scores
+                temp_score = sort_scoreboard.score[j];
+                sort_scoreboard.score[j] = sort_scoreboard.score[j+1];
+                sort_scoreboard.score[j+1] = temp_score;
+            
+                // troca nomes
+                strcpy(temp_nome, sort_scoreboard.nome[j]);
+                strcpy(sort_scoreboard.nome[j], sort_scoreboard.nome[j+1]);
+                strcpy(sort_scoreboard.nome[j+1], temp_nome);
+            }
+        }
+    }
+
+    file_score = fopen("scoreboard_file.txt", "w"); // ficheiro ligado ao txt do scoreboard em mode de escrever (w de wright)
+
+    if (file_score != NULL) // caso o ficheiro seja null
+        fprintf(file_score, "%s %d", sort_scoreboard.nome[0], sort_scoreboard.score[0]);  // imprime no ficheiro o nome e o score
+    i = 1;
+    sort_scoreboard.counter--;
+    while (file_score != NULL && sort_scoreboard.counter != 0){ 
+        if (file_score != NULL) // caso o ficheiro seja null
+            fprintf(file_score, "\n%s %d", sort_scoreboard.nome[i], sort_scoreboard.score[i]);  // imprime no ficheiro o nome e o score
+        i++;
+        sort_scoreboard.counter--;
+    }
+    fclose(file_score); // fecha o ficheiro
+}
+/*
+função que vai buscar os dados do scoreboard e imprime os no ecrã
+*/
 void scoreboard(int linhas, int colunas)
 {
-    WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2);
-    box(win_score, 0, 0);
+    WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2);     // criação da janela desejada
+    box(win_score, 0, 0);                                          // box à volta da janela
 
-    FILE *file_score;
-    file_score = fopen("scoreboard_file.txt", "r");
+    FILE *file_score;                                              // criação de um ficheiro
+    file_score = fopen("scoreboard_file.txt", "r");                // ficheiro ligado ao txt do scoreboard em mode de ler (r de reading)
 
     char name[100];
     int score;
     int i = 0;
+    int counter = 1;
 
+    /*
+    loop que imprime linha a linha o nome e o score
+    */
     if (file_score != NULL)
     {
         while (fscanf(file_score, "%s %d", name, &score) != EOF)
@@ -1511,14 +1594,16 @@ void scoreboard(int linhas, int colunas)
                 {
                     mvwprintw(win_score, i + 1, j + 1, " ");
                 }
-                mvwprintw(win_score, i + 1, 1, "%s", name);
+                mvwprintw(win_score, i + 1, 1, "%d %s", counter, name);
+                counter++;
                 int nDigits = floor(log10(abs(score))) + 1;
                 mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
                 wattroff(win_score, A_REVERSE);
             }
             else
             {
-                mvwprintw(win_score, i + 1, 1, "%s", name);
+                mvwprintw(win_score, i + 1, 1, "%d %s", counter, name);
+                counter++;
                 int nDigits = floor(log10(abs(score))) + 1;
                 mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
             }
@@ -1526,7 +1611,7 @@ void scoreboard(int linhas, int colunas)
         }
     }
 
-    fclose(file_score);
+    fclose(file_score);   // fecha o ficheiro
     wrefresh(win_score);
 }
 /*
@@ -1721,6 +1806,7 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
             case 3: // Opção "SCOREBOARD!"
                 while (true)
                 {
+                    sort_scoreboard();
                     scoreboard(linhas, colunas); // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
                     int selected = getch();
                     if (selected == 27)
