@@ -12,7 +12,6 @@
         - para o do player 2 (?)
     Criar uma janela de menu
         Player X ganhou o jogo, o Player Y vai ter de pagar o jantar
-    Criar scoreboard para jogo facil e dificil
     Modular o projeto
     Atualizar git direitinho
     Som
@@ -290,7 +289,7 @@ void do_guns_aplications(char c, char player1_last_direction_moved, int colunas,
     change_player_weapon(c);
     bullet_position();
     bulletshow(c, player1_last_direction_moved);
-    createbullet(c);
+    createbullet();
     bullet_collision(colunas, mapa);
     do_player_punch(c, player1_last_direction_moved);
     if (bullet.positionX == mob_positionX && bullet.positionY == mob_positionY)
@@ -1656,6 +1655,75 @@ void sort_scoreboard()
     }
     fclose(file_score); // fecha o ficheiro
 }
+void sort_scoreboard_desafio()
+{
+    FILE *file_score;                                       // criação de um ficheito
+    file_score = fopen("scoreboard_file_desafio.txt", "r"); // ficheiro ligado ao txt do scoreboard em mode de ler (r de reading)
+
+    int score;
+    char nome[30];
+    int i = 0;
+
+    /*
+    Struct para a organização da scoreboard.
+    Inclui uma lista com os nomes, uma lista com os score, e um conter.
+    */
+    Scoreboard sort_scoreboard;
+    sort_scoreboard.counter = 0;
+
+    if (file_score != NULL)
+    { // caso o ficheiro seja null
+        while (fscanf(file_score, "%s %d", nome, &score) != EOF)
+        {                                          // enquanto que o ficheiro não chega ao final ele continua a pegar em nomes e scores
+            strcpy(sort_scoreboard.nome[i], nome); // copia o nome da linha para a struct
+            sort_scoreboard.score[i] = score;      // copia o score da linha para o struct
+            sort_scoreboard.counter++;
+            i++;
+        }
+    }
+    fclose(file_score); // fecha o ficheiro
+
+    int n = sort_scoreboard.counter;
+    int j, temp_score;
+    char temp_nome[30];
+
+    /*
+    Loop simples que utiliza o metodo de buble sort para ordenar a struct de maneira decrescente
+    */
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (sort_scoreboard.score[j] < sort_scoreboard.score[j + 1])
+            {
+                // troca scores
+                temp_score = sort_scoreboard.score[j];
+                sort_scoreboard.score[j] = sort_scoreboard.score[j + 1];
+                sort_scoreboard.score[j + 1] = temp_score;
+
+                // troca nomes
+                strcpy(temp_nome, sort_scoreboard.nome[j]);
+                strcpy(sort_scoreboard.nome[j], sort_scoreboard.nome[j + 1]);
+                strcpy(sort_scoreboard.nome[j + 1], temp_nome);
+            }
+        }
+    }
+
+    file_score = fopen("scoreboard_file_desafio.txt", "w"); // ficheiro ligado ao txt do scoreboard em mode de escrever (w de wright)
+
+    if (file_score != NULL)                                                              // caso o ficheiro seja null
+        fprintf(file_score, "%s %d", sort_scoreboard.nome[0], sort_scoreboard.score[0]); // imprime no ficheiro o nome e o score
+    i = 1;
+    sort_scoreboard.counter--;
+    while (file_score != NULL && sort_scoreboard.counter != 0)
+    {
+        if (file_score != NULL)                                                                // caso o ficheiro seja null
+            fprintf(file_score, "\n%s %d", sort_scoreboard.nome[i], sort_scoreboard.score[i]); // imprime no ficheiro o nome e o score
+        i++;
+        sort_scoreboard.counter--;
+    }
+    fclose(file_score); // fecha o ficheiro
+}
 /*
 função que vai buscar os dados do scoreboard e imprime os no ecrã
 */
@@ -1664,7 +1732,7 @@ void scoreboard(int linhas, int colunas)
     WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2); // criação da janela desejada
     box(win_score, 0, 0);                                      // box à volta da janela
 
-    FILE *file_score;                               // criação de um ficheiro
+    FILE *file_score;                                       // criação de um ficheiro
     file_score = fopen("scoreboard_file.txt", "r"); // ficheiro ligado ao txt do scoreboard em mode de ler (r de reading)
 
     char name[100];
@@ -1703,6 +1771,52 @@ void scoreboard(int linhas, int colunas)
         }
     }
 
+    fclose(file_score); // fecha o ficheiro
+    wrefresh(win_score);
+}
+void scoreboard_desafio(int linhas, int colunas)
+{
+    WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2); // criação da janela desejada
+    box(win_score, 0, 0);                                      // box à volta da janela
+
+    FILE *file_score;                                       // criação de um ficheiro
+    file_score = fopen("scoreboard_file_desafio.txt", "r"); // ficheiro ligado ao txt do scoreboard em mode de ler (r de reading)
+
+    char name[100];
+    int score;
+    int i = 0;
+    int counter = 1;
+
+    /*
+    loop que imprime linha a linha o nome e o score
+    */
+    if (file_score != NULL)
+    {
+        while (fscanf(file_score, "%s %d", name, &score) != EOF)
+        {
+            if (i % 2 == 0)
+            {
+                wattron(win_score, A_REVERSE);
+                for (int j = 0; j < colunas - 6; j++)
+                {
+                    mvwprintw(win_score, i + 1, j + 1, " ");
+                }
+                mvwprintw(win_score, i + 1, 1, "%d %s", counter, name);
+                counter++;
+                int nDigits = floor(log10(abs(score))) + 1;
+                mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
+                wattroff(win_score, A_REVERSE);
+            }
+            else
+            {
+                mvwprintw(win_score, i + 1, 1, "%d %s", counter, name);
+                counter++;
+                int nDigits = floor(log10(abs(score))) + 1;
+                mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
+            }
+            i++;
+        }
+    }
     fclose(file_score); // fecha o ficheiro
     wrefresh(win_score);
 }
@@ -1800,6 +1914,99 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             loop = 0;
     }
 }
+void multi_scoreboard_win(int linhas, int colunas){
+   int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_jogo = newwin(20, 40, start_y, start_x);       // criação da janela desejada
+    box(win_jogo, 0, 0);                                       // box à volta da janela
+    refresh();
+    wrefresh(win_jogo);
+
+    int selected;
+    int highlight = 0;
+    int loop = 1; // variavel para o loop do jogo
+
+    // opções do menu
+    const char option1[30] = " -  MODO NORMAL   ";
+    const char option2[30] = " -  MODO DIFICIl  ";
+
+    keypad(win_jogo, true); // ativa o keypad
+    /*
+    Loop while que verifica a tecla que o utlizador clica e faz o highlight da opção desejada.
+    Este tambem imprime todas as opções do menu para a janela.
+    No entanto, não deixa o utilizador dar highlight em algo que não é suposto.
+    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção (loop = 0)
+    */
+    while (loop == 1)
+    {
+        box(win_jogo, 0, 0);
+        for (int i = 0; i < 2; i++)
+        {
+            if (i == highlight)
+                wattron(win_jogo, A_REVERSE);
+            switch (i)
+            {
+            case 0:
+                mvwprintw(win_jogo, 8 + i, 10, option1);
+                break;
+            case 1:
+                mvwprintw(win_jogo, 9 + i, 10, option2);
+                break;
+            }
+            wattroff(win_jogo, A_REVERSE);
+        }
+
+        selected = wgetch(win_jogo); // tecla premida
+
+        switch (selected) // switch para dar highlight na opção correta escolhida pelo jogador, não o deixa sair das opções pretendidas
+        {
+        case KEY_UP:
+            highlight--;
+            if (highlight == -1)
+                highlight = 0;
+            break;
+        case KEY_DOWN:
+            highlight++;
+            if (highlight == 2)
+                highlight = 1;
+            break;
+        }
+
+        if (selected == 10)
+        {
+            switch (highlight)
+            {
+            case 0: // Opção scoreboard "Singleplayer"
+                clear();
+                refresh();
+                sort_scoreboard();
+                while (true)
+                {
+                    scoreboard(linhas, colunas); // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
+                    char selected = getch();
+                    if (selected == 27) break;
+                }
+                clear();
+                refresh();
+                break;
+            case 1: // Opção scoreboard "Multiplayer"
+                clear();
+                refresh();
+                sort_scoreboard_desafio();
+                while (true)
+                {
+                    scoreboard_desafio(linhas, colunas); // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
+                    char selected = getch();
+                    if (selected == 27) break;
+                }
+                clear();
+                refresh();
+                break;
+            }
+        }
+        if (selected == 27)
+            loop = 0;
+    } 
+}
 /*
 Função do menu principal do jogo.
 Imprime o menu assim que o jogo começa.
@@ -1896,17 +2103,9 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
             case 2: // Opção "MANUAL DE INSTRUCOES"
                 break;
             case 3: // Opção "SCOREBOARD!"
-                while (true)
-                {
-                    sort_scoreboard();
-                    scoreboard(linhas, colunas); // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
-                    int selected = getch();
-                    if (selected == 27)
-                        break;
-                }
+                multi_scoreboard_win(linhas, colunas);
                 clear();
                 refresh();
-                break;
                 break;
             case 4:       // Opção "EXIT GAME"
                 loop = 0; // para sair do loop
@@ -1927,7 +2126,7 @@ int main()
     refresh();
 
     // para iniciar cores
-    start_color();
+    //start_color();
 
     keypad(stdscr, true); // ativa as keypads
     noecho();             // nao aparece input do utilizador
