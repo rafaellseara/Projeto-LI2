@@ -1441,6 +1441,37 @@ void final_win(int linhas, int colunas, int score)
         fprintf(file_score, "\n%s %d", nome, score); // imprime no ficheiro o nome e o score
     fclose(file_score);                              // fecha o ficheiro
 }
+void final_multiplayer_win(int linhas, int colunas, int player1_hp, int player2_hp)
+{
+    noecho();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);      // criação da janela desejada
+    box(win_final, 0, 0);                                      // box à volta da janela
+
+    if (player2_hp == 0)
+    {
+        wattron(win_final, A_BOLD); // atributo bold on
+        mvwprintw(win_final, 7, 12, "PLAYER 1 GANHOU!");
+        wattroff(win_final, A_BOLD); // atributo bold off
+        mvwprintw(win_final, 9, 2, "HOJE QUEM PAGA O JANTAR E O PLAYER 2");
+    } else if (player1_hp == 0)
+    {
+        wattron(win_final, A_BOLD); // atributo bold on
+        mvwprintw(win_final, 7, 12, "PLAYER 2 GANHOU!");
+        wattroff(win_final, A_BOLD); // atributo bold off
+        mvwprintw(win_final, 9, 2, "HOJE QUEM PAGA O JANTAR E O PLAYER 1");
+    }
+    wattron(win_final, A_REVERSE);
+    mvwprintw(win_final, 12, 12, "   CONTINUAR   ");
+    wattroff(win_final, A_REVERSE);
+    wrefresh(win_final);
+
+    while (true){
+        char selected = getch();
+        if (selected == 10) break;
+    }
+    clear();
+}
 /*
 funçao que tem todas as propriedades do jogo
 */
@@ -1509,7 +1540,7 @@ void main_game_multi_player(char c, int linhas, int colunas, Map mapa[][colunas]
             game_over = 1;
             clear();
             refresh();
-            final_win(linhas, colunas, player1.score);
+            final_multiplayer_win(linhas, colunas, player1.hp, player2.hp);
             player1.hp = 100;
             player1.score = 0;
             player2.hp = 100;
