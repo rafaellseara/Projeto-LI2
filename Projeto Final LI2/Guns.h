@@ -22,7 +22,7 @@ void bullet_collision(int colunas, Map mapa[][colunas], Bullet *bullet_player1, 
 /*
 Esta função vai updatando e dando print à bala
 */
-void create_bullet(Bullet *bullet_player1, Bullet *bullet_player2);
+void create_bullet(Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2);
 
 void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bullet_player1, Mob *mobs);
 
