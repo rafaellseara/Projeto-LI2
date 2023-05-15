@@ -68,6 +68,7 @@ Bullet bullet = {0, 0, 0, 0, 0};
 Mob mob = {1, 0, 0, 0, 1, 100};
 char piece_in_place = ' '; // variavel para guardar o caracter (ex. lago) para depois voltar a colocar quando o jogador sair
 char last_direction_moved;
+char c;
 int is_flag_placed = 0;             // guardar se a flag está presente
 int flag_positionX, flag_positionY; // posiçoes da flag para comparar e recoloca-la
 int time_of_usage = 0;
@@ -79,7 +80,7 @@ int is_mob_placed = 0;
 /*
 esta funçao troca as armas do jogadores
 */
-void change_player_weapon(int c)
+void change_player_weapon(char c)
 {
     // Se a gun no struct do jogador estiver 1->Punho 2->Pistola
     // Para Trocar Armas
@@ -96,7 +97,7 @@ void change_player_weapon(int c)
 esta funçao usa o soco
             TERMINAR - mob tem de estar acima do jogador
 */
-void do_player_punch(int c, int linhas, int colunas, Map mapa[][colunas], char last_direction_moved)
+void do_player_punch(int c, char last_direction_moved, Mob mob)
 // A direção do ataque está relacionada com o ultimo movimento do jogador
 {
     if (c == ' ' && player1.gun == 1 && last_direction_moved == 'w') // Recebe o ultimo movimento e ataca nessa direção
@@ -175,10 +176,8 @@ void bullet_position()
 }
 /*
 esta funçao faz a bala desaparecer quando colide com algo (a posicao dela é igual à do jogador)
------ so tem colisao com parede, fazemos com mob mais tarde??
-        TERMINAR
 */
-void bullet_collision(int linhas, int colunas, Map mapa[][colunas])
+void bullet_collision(int colunas, Map mapa[][colunas])
 {
     if (mapa[bullet.positionY][bullet.positionX].visible_piece == '#') //|| mapa[bullet.positionY][bullet.positionX].visible_piece == MOB) //caso a posicão da bala seja igual à posicao de uma parede ou mob
     {
@@ -190,7 +189,7 @@ void bullet_collision(int linhas, int colunas, Map mapa[][colunas])
 /*
 Esta função vai updatando e dando print à bala
 */
-void createbullet(char c) // para confirmar se o erro era de estar dentro do update tambem substituir por um switch do bulletnumber
+void createbullet() // para confirmar se o erro era de estar dentro do update tambem substituir por um switch do bulletnumber
 {
     if (bullet.number == 1 && bullet.appearing == 1) // substituir por um switch /switch(bullet.direction)
     {
@@ -281,7 +280,7 @@ int count_walls_4x8(int colunas, Map mapa[][colunas], int linha_atual, int colun
 /*
 funçao relativas às estruturas que tiram e acrescentam vida/amunição
 */
-void do_structure_aplications(int colunas, int linhas, Map mapa[][colunas])
+void do_structure_aplications(int colunas, Map mapa[][colunas])
 {
     if (mapa[player1.positionY][player1.positionX].visible_piece == '~')
     {
@@ -716,7 +715,6 @@ void do_add_lake(int linhas, int colunas, Map mapa[][colunas])
 }
 /*
 funçao que acrescenta casa de curar vida
-    ------------------NÃO ESTÁ A FUNCIONAR AINDA------------------
 */
 void do_add_life(int linhas, int colunas, Map mapa[][colunas])
 {
@@ -769,6 +767,27 @@ void do_add_ammo(int linhas, int colunas, Map mapa[][colunas])
                 i = linhas - 2;
                 j = colunas - 2;
             }
+        }
+    }
+}
+/*
+funçao que adiciona o farol
+*/
+void do_add_lighthouse(int linhas, int colunas, Map mapa[][colunas])
+{
+    int centerX = colunas / 2;
+    int centerY = linhas / 2;
+    // insere o farol no centro do ecra
+    for (int i = centerY - 3; i < centerY + 4; i++)
+    {
+        for (int j = centerX - 4; j < centerX + 5; j++)
+        {
+            // garantir que tem pelo menos 2 espaços para jogador passar entre farois e paredes
+            if (i == centerY - 3 || i == centerY - 2 || i == centerY + 2 || i == centerY + 3 ||
+                j == centerX - 4 || j == centerX - 3 || j == centerX + 3 || j == centerX + 4)
+                mapa[i][j].visible_piece = ' ';
+            else
+                mapa[i][j].visible_piece = '!';
         }
     }
 }
@@ -848,12 +867,10 @@ void do_concat_walls(int linhas, int colunas, Map mapa[][colunas])
 }
 /*
 esta funçao faz o update do mapa, sempre que o jogador se mexe
-falta completar esta funçao com o que acontece sempre que o jogador pisa lagos, etc
-falta tambem modificar os valores de mapa[][].player.etc e das mobs
 */
-void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas, Flag flag, Mob mob) // tem de receber o mapa desta forma pois é 2D
+void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas) // tem de receber o mapa desta forma pois é 2D
 {
-
+    // transformar num switch??
     if (c == 'w' && mapa[player1.positionY - 1][player1.positionX].visible_piece != '#')
     {
         last_direction_moved = 'w';                                                        // guardar ultima direçao em que se moveu
@@ -861,21 +878,6 @@ void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas, Flag fl
         if (mapa[player1.positionY - 1][player1.positionX].visible_piece != 'I')           // nao precisamos de recolocar a flag
             piece_in_place = mapa[player1.positionY - 1][player1.positionX].visible_piece; // atribuir a peça que la está para depois colocar de novo
         player1.positionY--;
-        if (player1.positionX == flag_positionX && player1.positionY == flag_positionY)
-        {
-            player1.score++;    // incrementar 1 ao score
-            is_flag_placed = 0; // dar reset a flag
-        }
-        // condiçao para verificar quantos passos deu com o nightstick on
-        if (player1.usingNightStick == 1)
-        {
-            time_of_usage++;
-            if (time_of_usage == maximum_nightstick_time) // necessario? talvez nao devesse estar aqui
-            {
-                player1.usingNightStick = 0;
-                time_of_usage = 0;
-            }
-        }
     }
     else if (c == 's' && mapa[player1.positionY + 1][player1.positionX].visible_piece != '#')
     {
@@ -884,21 +886,6 @@ void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas, Flag fl
         if (mapa[player1.positionY + 1][player1.positionX].visible_piece != 'I')           // nao precisamos de recolocar a flag
             piece_in_place = mapa[player1.positionY + 1][player1.positionX].visible_piece; // atribuir a peça que la está para depois colocar de novo
         player1.positionY++;
-        if (player1.positionX == flag_positionX && player1.positionY == flag_positionY)
-        {
-            player1.score++;    // incrementar 1 ao score
-            is_flag_placed = 0; // dar reset a flag
-        }
-        // condiçao para verificar quantos passos deu com o nightstick on
-        if (player1.usingNightStick == 1)
-        {
-            time_of_usage++;
-            if (time_of_usage == maximum_nightstick_time) // necessario? talvez nao devesse estar aqui
-            {
-                player1.usingNightStick = 0;
-                time_of_usage = 0;
-            }
-        }
     }
     else if (c == 'a' && mapa[player1.positionY][player1.positionX - 1].visible_piece != '#')
     {
@@ -907,21 +894,6 @@ void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas, Flag fl
         if (mapa[player1.positionY][player1.positionX - 1].visible_piece != 'I')           // nao precisamos de recolocar a flag
             piece_in_place = mapa[player1.positionY][player1.positionX - 1].visible_piece; // atribuir a peça que la está para depois colocar de novo
         player1.positionX--;
-        if (player1.positionX == flag_positionX && player1.positionY == flag_positionY)
-        {
-            player1.score++;    // incrementar 1 ao score
-            is_flag_placed = 0; // dar reset a flag
-        }
-        // condiçao para verificar quantos passos deu com o nightstick on
-        if (player1.usingNightStick == 1)
-        {
-            time_of_usage++;
-            if (time_of_usage == maximum_nightstick_time) // necessario? talvez nao devesse estar aqui
-            {
-                player1.usingNightStick = 0;
-                time_of_usage = 0;
-            }
-        }
     }
     else if (c == 'd' && mapa[player1.positionY][player1.positionX + 1].visible_piece != '#')
     {
@@ -930,43 +902,11 @@ void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas, Flag fl
         if (mapa[player1.positionY][player1.positionX + 1].visible_piece != 'I')           // nao precisamos de recolocar a flag
             piece_in_place = mapa[player1.positionY][player1.positionX + 1].visible_piece; // atribuir a peça que la está para depois colocar de novo
         player1.positionX++;
-        if (player1.positionX == flag_positionX && player1.positionY == flag_positionY)
-        {
-            player1.score++;    // incrementar 1 ao score
-            is_flag_placed = 0; // dar reset a flag
-        }
-        // condiçao para verificar quantos passos deu com o nightstick on
-        if (player1.usingNightStick == 1)
-        {
-            time_of_usage++;
-            if (time_of_usage == maximum_nightstick_time) // necessario? talvez nao devesse estar aqui
-            {
-                player1.usingNightStick = 0;
-                time_of_usage = 0;
-            }
-        }
     }
-    else if (c == 'b') // isto é para alterar e meter no create map
-    {
-        do_concat_walls(linhas, colunas, mapa);
-        is_flag_placed = 0; // para testar, depois tirar
-    }
-    // else if (c == 'l') // isto é para alterar e meter no create map
-    // {
-    //     do_add_lake(linhas, colunas, mapa);
-    // }
-    else if (c == 'x') // para manter, destruir paredes
+    else if (c == 'x') // destruir paredes
     {
         do_destroy_wall(last_direction_moved, player1.positionY, player1.positionX, linhas, colunas, mapa);
     }
-    // else if (c == 'j')
-    // {
-    //     do_add_life(linhas, colunas, mapa);
-    // }
-    // else if (c == 'p')
-    // {
-    //     do_add_ammo(linhas, colunas, mapa);
-    // }
     else if (c == 'e' && mapa[player1.positionY][player1.positionX + 1].visible_piece == ' ' && player1.trapNumber > 0) // colocar armadilhas no chao
     {
         mapa[player1.positionY][player1.positionX + 1].visible_piece = '^';
@@ -980,6 +920,21 @@ void do_update_map(char c, int colunas, Map mapa[][colunas], int linhas, Flag fl
     else if (c == 27)
     {
         game_over = 1;
+    }
+    if (player1.positionX == flag_positionX && player1.positionY == flag_positionY)
+    {
+        player1.score++;    // incrementar 1 ao score
+        is_flag_placed = 0; // dar reset a flag
+    }
+    // condiçao para verificar quantos passos deu com o nightstick on
+    if (player1.usingNightStick == 1)
+    {
+        time_of_usage++;
+        if (time_of_usage == maximum_nightstick_time)
+        {
+            player1.usingNightStick = 0;
+            time_of_usage = 0;
+        }
     }
 }
 /*
@@ -1025,6 +980,7 @@ void do_create_map(int linhas, int colunas, Map mapa[][colunas])
     do_add_life(linhas, colunas, mapa);
     do_add_lake(linhas, colunas, mapa);
     do_add_ammo(linhas, colunas, mapa);
+    do_add_lighthouse(linhas, colunas, mapa);
     do_insert_flag(linhas, colunas, mapa, flag);
     do_mob_application(linhas, colunas, mapa, mob);
 }
@@ -1060,7 +1016,7 @@ void do_print_map(int linhas, int colunas, Map mapa[][colunas], int n)
 /*
 esta funçao dá o score e hp
 */
-void print_footer(int linhas, int colunas, Map mapa[][colunas], int n)
+void print_footer(int linhas, int colunas, int n)
 {
     // imprimir score e hp do jogador 1 no ecrã, canto inferior direito
     // caso o hp seja 100 tem uma posiçao
@@ -1159,6 +1115,73 @@ void player_position(int linhas, int colunas, Map mapa[][colunas])
         }
     }
 }
+void final_win(int linhas, int colunas, int score)
+{
+    noecho();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);
+    box(win_final, 0, 0);
+
+    FILE *file_score;
+    file_score = fopen("scoreboard_file.txt", "a");
+
+    char nome[28] = {0};
+
+    wattron(win_final, A_BOLD);
+    mvwprintw(win_final, 6, 17, "LOSER!");
+    wattroff(win_final, A_BOLD);
+    mvwprintw(win_final, 8, 6, "A TUA PONTUACAO FOI DE %d", score);
+    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
+    wrefresh(win_final);
+
+    WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5);
+    box(win_nome, 0, 0);
+    move(start_y + 13, start_x + 6);
+    wrefresh(win_nome);
+
+    int check = 0;
+
+    for (int i = 0; i < 28;)
+    {
+        char selected = getch();
+        if (selected == 10)
+        {
+            check = 1;
+            break;
+        }
+        else if (i < 27 && isprint(selected))
+        {
+            nome[i] = selected;
+            mvwprintw(win_nome, 1, i + 1, "%c", selected);
+            wrefresh(win_nome);
+            i++;
+        }
+        else if ((selected == 127) && (i > 0))
+        {
+            i--;
+            nome[i] = ' ';
+            mvwaddch(win_nome, 1, i + 1, ' ');
+            wmove(win_nome, 1, i + 1);
+            wrefresh(win_nome);
+        }
+    }
+
+    wrefresh(win_nome);
+
+    if (check == 0)
+    {
+        while (true)
+        {
+            char selected = getch();
+            if (selected == 10)
+                break;
+        }
+    }
+
+    if (file_score != NULL)
+        fprintf(file_score, "\n%s %d", nome, score);
+    fclose(file_score);
+}
 /*
 funçao que tem todas as propriedades do jogo
 */
@@ -1171,23 +1194,24 @@ void main_game(char c, int linhas, int colunas, Map mapa[][colunas])
             cbreak();
             timeout(200);
             c = getch();
-            do_structure_aplications(colunas, linhas, mapa);
-            do_update_map(c, colunas, mapa, linhas, flag, mob); // aqui fazemos o update do mapa sempre que o utilizador prima uma tecla
-            do_insert_flag(linhas, colunas, mapa, flag);        // inserir a flag
+            do_structure_aplications(colunas, mapa);
+            do_update_map(c, colunas, mapa, linhas);     // aqui fazemos o update do mapa sempre que o utilizador prima uma tecla
+            do_insert_flag(linhas, colunas, mapa, flag); // inserir a flag
             do_mob_application(linhas, colunas, mapa, mob);
             do_print_map(linhas, colunas, mapa, 1); // imprimimos o mapa para o utilizador
             change_player_weapon(c);
             bullet_position();
             bulletshow(c, last_direction_moved);
             createbullet(c);
-            bullet_collision(linhas, colunas, mapa);
+            bullet_collision(colunas, mapa);
+            do_player_punch(c, last_direction_moved, mob);
             // adicionamos aqui o jogador para termos o mapa com as posiçoes de lagos e assim nao sobrepostas
             attron(COLOR_PAIR(5));
             mvaddch(player1.positionY, player1.positionX, '@');
             attroff(COLOR_PAIR(5));
             mvaddch(mob_positionY, mob_positionX, '1');
             // createlight(player1.positionY, player1.positionX, colunas, linhas, 3); // adiciona limitaçao de luz
-            print_footer(linhas, colunas, mapa, 4); // imprimir caracteristicas do jogo no canto
+            print_footer(linhas, colunas, 4); // imprimir caracteristicas do jogo no canto
         }
         else
         {
@@ -1210,7 +1234,7 @@ void start_game(int linhas, int colunas, Map mapa[][colunas])
     // adiciona limitaçao de luz
     // createlight(player1.positionY, player1.positionX, colunas, linhas, 3);
     // imprimir caracteristicas do jogo no canto
-    print_footer(linhas, colunas, mapa, 4);
+    print_footer(linhas, colunas, 4);
 }
 /*
 funçao que inicia mapa pre definido 40(y)x160(x)
@@ -1231,13 +1255,64 @@ void create_map_predefined(int linhas, int colunas, Map mapa[][colunas])
             }
         }
     }
-    for (int i = 5; i < 9; i++)
+    // lago
+    for (int i = 5; i < 11; i++)
     {
-        for (int j = 22; j < 30; j++)
-        {
-            mapa[i][j].visible_piece = '~';
-        }
+        mapa[5][i].visible_piece = '~';
     }
+    for (int i = 10; i < 14; i++)
+    {
+        mapa[5][i].visible_piece = '~';
+    }
+    for (int i = 5; i < 19; i++)
+    {
+        mapa[6][i].visible_piece = '~';
+    }
+    for (int i = 5; i < 18; i++)
+    {
+        mapa[7][i].visible_piece = '~';
+    }
+    for (int i = 5; i < 18; i++)
+    {
+        mapa[8][i].visible_piece = '~';
+    }
+    for (int i = 7; i < 18; i++)
+    {
+        mapa[9][i].visible_piece = '~';
+    }
+    for (int i = 7; i < 18; i++)
+    {
+        mapa[10][i].visible_piece = '~';
+    }
+    // vida
+    for (int i = 10; i < 14; i++)
+    {
+        mapa[30][i].visible_piece = '~';
+    }
+    for (int i = 10; i < 14; i++)
+    {
+        mapa[31][i].visible_piece = '~';
+    }
+    // bordas da vida
+    for (int i = 7; i < 15; i++)
+    {
+        mapa[28][i].visible_piece = '#'; // cima
+    }
+    for (int i = 30; i < 33; i++)
+    {
+        mapa[i][8].visible_piece = '#'; // esquerda
+    }
+    mapa[30][7].visible_piece = '#';
+    for (int i = 28; i < 32; i++)
+    {
+        mapa[i][15].visible_piece = '#'; // direita
+    }
+    mapa[31][16].visible_piece = '#';
+    for (int i = 8; i < 17; i++)
+    {
+        mapa[33][i].visible_piece = '#'; // baixo
+    }
+
     for (int i = 0; i < linhas; i++)
     {
         for (int j = 0; j < colunas; j++)
@@ -1293,96 +1368,6 @@ void scoreboard(int linhas, int colunas)
     wrefresh(win_score);
 }
 
-void final_win (int linhas, int colunas,int score){
-    noecho();
-    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
-    WINDOW* win_final = newwin(20, 40, start_y, start_x);
-    box(win_final,0,0);
-
-    FILE* file_score;
-    file_score = fopen("scoreboard_file.txt","a");
-
-    char nome[28] = {0};
-
-    wattron(win_final, A_BOLD);
-    mvwprintw(win_final, 6, 17, "LOSER!");
-    wattroff(win_final, A_BOLD);
-    mvwprintw(win_final, 8, 8, "A TUA PONTUACAO FOI DE %d", score);
-    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
-    wrefresh(win_final);
-
-    WINDOW* win_nome = newwin (3,30, start_y + 12, start_x + 5);
-    box(win_nome,0,0);
-    move(start_y + 13,start_x + 6);
-    wrefresh(win_nome);
-
-    int check = 0;
-
-    for (int i = 0; i < 28;) {
-    char selected = getch();
-    if (selected == 10) {
-        check = 1;
-        break;
-    } 
-    else if (i < 27 && isprint(selected)) {
-        nome[i] = selected;
-        mvwprintw(win_nome, 1, i+1, "%c", selected);
-        wrefresh(win_nome);
-        i++;
-    } 
-    else if ((selected == 127) && (i > 0)){
-        i--;
-        nome[i] = ' ';
-        mvwaddch(win_nome, 1, i+1, ' ');
-        wmove(win_nome, 1, i+1);
-        wrefresh(win_nome);
-    }
-}
-
-    wrefresh(win_nome);
-
-    if (check == 0){
-        while (true){
-            char selected = getch();
-            if (selected == 10) break;
-        }
-    }
-    
-    if(file_score != NULL) fprintf(file_score, "\n%s %d",nome,score);
-    fclose(file_score);
-}
-/*
-função que imprime a janela de pausa no ecrã assim que o utilizador pressiona na tecla p para pausar o jogo.
-Esta desaparece assim que o utilizador carrega na tecla enter.
-*/
-void pause_win(int linhas, int colunas){
-    int start_y = linhas / 2 - 15, start_x = colunas / 2 - 30;  // cordenadas inicias
-    WINDOW* win_pause = newwin(30, 60, start_y, start_x);  // criação da janela desejada
-    box(win_pause,0,0);  // box à volta da janela
-    refresh();
-    wrefresh(win_pause);
-    /*
-    O processo seguinte imprime para o ecrã a msg que é necessária.
-    Neste caso imprimime-se duas frases com o atributo de BOLD e uma frase com o atributo de REVERSE(cores reversas).
-    */
-    wattron(win_pause,A_BOLD);  // atributo bold on
-    mvwprintw(win_pause, 11, 12, "    O MENU DE PAUSA E PARA FRACOS    ");
-    mvwprintw(win_pause, 13, 12, "CARREGA NO BOTAO ENTER PARA CONTINUAR");
-    wattroff(win_pause, A_BOLD);  // atributo bold off
-    wattron(win_pause, A_REVERSE);  // atributo reverse on
-    mvwprintw(win_pause, 17, 18, "        CONTINUAR        ");
-    wattroff(win_pause, A_REVERSE);  // atributo reverse off
-    wrefresh(win_pause);
-    // loop que espera pela tecla enter para continuar
-    while (true){
-        char selected = getch();
-        if (selected == 10) break;
-    }
-    wclear(win_pause);
-    wrefresh(win_pause);
-    refresh();
-}
-
 void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
 {
 
@@ -1392,7 +1377,6 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
     refresh();
     wrefresh(win_jogo);
 
-    char c;
     int selected;
     int highlight = 0;
     int loop = 1;
@@ -1442,35 +1426,24 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             switch (highlight)
             {
             case 0:
-                c = 'w';
+                game_over = 0;
                 clear();
                 do_create_map(linhas, colunas, mapa);
-                start_game(linhas, colunas, mapa); // iniciamos o jogo
-                while (c != 27)                    // este ciclo funciona como input do user, sai ao carregar no ESC = 27 ASCII
-                {
-                    c = getch();                         // recebe o input do user (key pad nao está a funcionar ???)
-                    main_game(c, linhas, colunas, mapa); // damos update ao jogo
-                    if (player1.hp == 0) break;
-                    if (c == 'p'){
-                        pause_win(linhas,colunas);
-                        main_game(c, linhas, colunas, mapa);
-                    }
-                }
+                start_game(linhas, colunas, mapa);   // iniciamos o jogo
+                main_game(c, linhas, colunas, mapa); // damos update ao jogo
                 clear();
                 refresh();
-                if (player1.hp == 0){
-                    clear();
-                    refresh();
-                    final_win(linhas, colunas, player1.score);
-                    player1.hp = 100;
-                    player1.score = 0;
-                    clear();
-                    refresh();
-                }
                 loop = 0;
                 break;
             case 1:
-
+                game_over = 0;
+                clear();
+                create_map_predefined(linhas, colunas, mapa);
+                start_game(linhas, colunas, mapa);   // iniciamos o jogo
+                main_game(c, linhas, colunas, mapa); // damos update ao jogo
+                clear();
+                refresh();
+                loop = 0;
                 break;
                 ;
             }
@@ -1479,12 +1452,9 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas])
             loop = 0;
     }
 }
-/*
-Função main: esta é a função que irá tratar de toda a composição do jogo, desde o input do utilizador até ao detalhe mais pequeno
-*/
+
 int main()
 {
-    char c;
     int linhas, colunas; // para definir o tamanho do mapa
     srand(time(NULL));   // funçao random com a seed do tempo para randomizar ainda mais
 
@@ -1536,9 +1506,8 @@ int main()
 
     /*
     Loop while que verifica a tecla que o utlizador clica e faz o highlight da opção desejada.
-    Este tambem imprime todas as opções do menu para a janela.
     No entanto, não deixa o utilizador dar highlight em algo que não é suposto.
-    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção (loop = 0)
+    Para concluir o loop acaba assim que o utilizador carregue na tecla enter para escolher a sua opção
     */
     while (loop == 1)
     {
@@ -1567,9 +1536,9 @@ int main()
             }
             wattroff(win, A_REVERSE);
         }
-        selected = wgetch(win);  // tecla premida
+        selected = wgetch(win);
 
-        switch (selected)  // switch para dar highlight na opção correta escolhida pelo jogador, não o deixa sair das opções pretendidas
+        switch (selected)
         {
         case KEY_UP:
             highlight--;
@@ -1587,17 +1556,24 @@ int main()
         {
             switch (highlight)
             {
-            case 0: // Opção "COMECAR NOVO JOGO!"
-                multi_jogo_win(linhas, colunas, mapa);  // inicia a janela de singleplayer/multiplayer
+            case 0:
+                clear();
+                refresh();
+                int score = 10;
+                final_win(linhas, colunas, score);
+                clear();
+                refresh();
                 break;
-            case 1: // Opção "QUERO SER DESAFIADO :D"
+            case 1:
+                multi_jogo_win(linhas, colunas, mapa);
                 break;
-            case 2: // Opção "MANUAL DE INSTRUCOES"
+            case 2:
+
                 break;
-            case 3: // Opção "SCOREBOARD!"
+            case 3:
                 while (true)
                 {
-                    scoreboard(linhas, colunas);  // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
+                    scoreboard(linhas, colunas);
                     int selected = getch();
                     if (selected == 27)
                         break;
@@ -1606,7 +1582,7 @@ int main()
                 refresh();
                 break;
                 break;
-            case 4: // Opção "EXIT GAME"
+            case 4:
                 loop = 0; // para sair do loop
                 break;
             }

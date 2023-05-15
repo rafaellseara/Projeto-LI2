@@ -1,5 +1,0 @@
-Pedro                         20
-Rafa                          50
-Lara                          40
-Sara                         400
-Fernando                      50

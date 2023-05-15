@@ -1,0 +1,1 @@
+mapa[player1.positionY][player1.positionX].visible_piece = ' ';

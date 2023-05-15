@@ -27,7 +27,7 @@ typedef struct mob
 
 typedef struct map
 {
-    char visiblePiece; // #, @, etc
+    char visible_piece; // #, @, etc
     Player player;     // one player per map
     Mob mob[20];       // maximum 20 mobs per map
     int is_wall;       // if the position is a wall
@@ -45,38 +45,32 @@ falta tambem modificar os valores de mapa[][].player.etc e das mobs
 */
 void do_update_map(char c, int colunas, Map mapa[][colunas]) // tem de receber o mapa desta forma pois é 2D
 {
-    if (c == 'w' && mapa[y-1][x].visiblePiece != '#')
+    if (c == 'w' && mapa[y-1][x].visible_piece != '#')
     {
-        mapa[y][x].visiblePiece = ' ';
-        //mvaddch(y, x, ' ');
+        mapa[y][x].visible_piece = ' ';
         y--;
     }
-    else if (c == 's' && mapa[y + 1][x].visiblePiece != '#')
+    else if (c == 's' && mapa[y + 1][x].visible_piece != '#')
     {
-        mapa[y][x].visiblePiece = ' ';
-        //mvaddch(y, x, ' ');
+        mapa[y][x].visible_piece = ' ';
         y++;
     }
-    else if (c == 'a' && mapa[y][x - 1].visiblePiece != '#')
+    else if (c == 'a' && mapa[y][x - 1].visible_piece != '#')
     {
-        mapa[y][x].visiblePiece = ' ';
-        //mvaddch(y, x, ' ');
+        mapa[y][x].visible_piece = ' ';
         x--;
     }
-    else if (c == 'd' && mapa[y][x + 1].visiblePiece != '#')
+    else if (c == 'd' && mapa[y][x + 1].visible_piece != '#')
     {
-        mapa[y][x].visiblePiece = ' ';
-        //mvaddch(y, x, ' ');
+        mapa[y][x].visible_piece = ' ';
         x++;
     }
-    mapa[y][x].visiblePiece = '@';
-    //mvaddch(y, x, '@');
+    mapa[y][x].visible_piece = '@';
 }
 /*
 esta funçao cria o mapa inicial
 falta completar fazendo com que crie estruturas em condiçoes, juntas e nao apenas randomizadas
 falta acrescentar lagos, muniçoes, etc
-talvez colocar jogador implementado tambem aqui inicialmente (esta na main)
 */
 void do_create_map(int linhas, int colunas, Map mapa[][colunas])
 {
@@ -89,29 +83,27 @@ void do_create_map(int linhas, int colunas, Map mapa[][colunas])
             if (i == 0 || i == 1 || i == linhas - 1 || i == linhas - 2 || j == 0 || j == 1 || j == colunas - 1 || j == colunas - 2)
             {
                 mapa[i][j].is_wall = 1;
-                mapa[i][j].visiblePiece = '#';
+                mapa[i][j].visible_piece = '#';
                 map[i][j] = '#';
-                //mvaddch(i, j, '#');
             }
             else
             {
                 if (rand() % 5 == 0)
                 {
                     mapa[i][j].is_wall = 1;
-                    mapa[i][j].visiblePiece = '#';
+                    mapa[i][j].visible_piece = '#';
                     map[i][j] = '#';
-                    //mvaddch(i, j, '#');
                 }
                 else
                 {
                     mapa[i][j].is_wall = 0;
-                    mapa[i][j].visiblePiece = ' ';
+                    mapa[i][j].visible_piece = ' ';
                     map[i][j] = ' ';
-                    //mvaddch(i, j, ' ');
                 }
             }
         }
     }
+    mapa[y][x].visible_piece = '@'; // iniciamos o jogador aqui 
 }
 /*
 esta funçao é muito simples e apenas imprime o mapa para o ecra do utilizador
@@ -122,7 +114,7 @@ void do_print_map(int linhas, int colunas, Map mapa[][colunas])
     {
         for (int j = 0; j < colunas; j++)
         {
-            mvaddch(i,j,mapa[i][j].visiblePiece);
+            mvaddch(i,j,mapa[i][j].visible_piece);
         }
         
     }
@@ -143,50 +135,9 @@ int main()
 
     getmaxyx(stdscr, linhas, colunas); // ve o maximo de linhas e colunas da janela do terminal
 
-    int start_y = linhas/2 - 10, start_x = colunas/2 - 20;
-    WINDOW * win = newwin(20, 40, start_y, start_x);
-    box(win, 0, 0);
-    refresh();
-    wrefresh(win);
-
-    keypad(win, true);
-
-    char option[2][30] = {"COMECAR NOVO JOGO!", "QUERO SER DESAFIADO :D"};
-    int selected;
-    int highlight = 0;
-
-    while(1){
-        for (int i = 0; i < 2; i++){
-            if (i == highlight) wattron(win, A_REVERSE);
-            mvwprintw(win, 8+i, 10, option[i]);
-            wattroff(win, A_REVERSE);
-        }
-        selected = wgetch(win);
-
-        switch (selected)
-        {
-        case KEY_UP:
-            highlight--;
-            if (highlight == -1) highlight = 0;
-            break;
-        case KEY_DOWN:
-            highlight++;
-            if (highlight == 2) highlight = 1;
-            break;
-        default:
-            break;
-        }
-
-        if (selected == 10) break;
-    }
-
-
-    clear();
-
     Map mapa[linhas][colunas]; // iniciando um mapa
 
     do_create_map(linhas, colunas, mapa); // aqui criamos o mapa
-    mapa[y][x].visiblePiece = '@'; // iniciamos o jogador aqui mas talvez colocar la em cima na create map, mais facil
     do_print_map(linhas, colunas, mapa); // imprimimos o mapa inicial
     while (c != 27) // este ciclo funciona como input do user pre historico, sai ao carregar no ESC = 27 ASCII (FAZER MENU)
     {

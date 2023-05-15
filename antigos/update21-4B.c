@@ -378,7 +378,7 @@ int main()
         do_update_map(c, colunas, mapa, linhas, flag); // aqui fazemos o update do mapa sempre que o utilizador prima uma tecla
         do_insert_flag(linhas, colunas, mapa, flag);   // inserir a flag
         do_print_map(linhas, colunas, mapa);           // imprimimos o mapa para o utilizador
-        createlight(player1.positionY, player1.positionX, colunas, linhas);
+        //createlight(player1.positionY, player1.positionX, colunas, linhas);
     }
 
     getch(); // espera que o utilizador carregue numa tecla para nao sair abruptamente
