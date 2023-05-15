@@ -87,7 +87,7 @@ void main_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Game *
             game->game_over = 1;
             clear();
             refresh();
-            final_win(linhas, colunas, player1->score);
+            final_multiplayer_win(linhas, colunas, player1->hp, player2->hp);
             player1->hp = 100;
             player1->score = 0;
             player2->hp = 100;
@@ -122,7 +122,7 @@ void main_game_challenge(int linhas, int colunas, Map mapa[][colunas], Flag *fla
             game->game_over = 1;
             clear();
             refresh();
-            final_win(linhas, colunas, player1->score);
+            final_win_desafio(linhas, colunas, player1->score);
             player1->hp = 100;
             player1->score = 0;
             game->is_flag_placed = 0;

@@ -309,22 +309,9 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Gam
             {
             case 0: // Opção "Singleplayer"
                 game->game_over = 0;
-                //start_color();
-                //init_color(88, 500, 500, 499);
-                //init_pair(1, 88, 20);
                 clear();
                 refresh();                               
-                // attron(COLOR_PAIR(1));
-                // mvprintw(4,4, "TESTE");
-                // attroff(COLOR_PAIR(1));
                 do_create_map(linhas, colunas, mapa, flag, game);
-                // mapa[1][1].visible_piece = '#';
-                // mapa[3][1].visible_piece = '#';
-                // attron(COLOR_PAIR(1));
-                // mvprintw(5,4, "peça: %c", mapa[1][1].visible_piece);
-                // mvprintw(6,4, "peça: %c",mapa[2][1].visible_piece);
-                // mvprintw(7,4, "peça: %c",mapa[3][7].visible_piece);
-                // attroff(COLOR_PAIR(1));
                 start_game_single_player(linhas, colunas, mapa, mobs, player1, player2);   // iniciamos o jogo
                 main_game_single_player(linhas, colunas, mapa, game, player1, player2, mobs, flag, bullet_player1, bullet_player2); // damos update ao jogo
                 clear();
@@ -666,5 +653,99 @@ void pause_win(int linhas, int colunas)
     wclear(win_pause);
     wrefresh(win_pause);
     refresh();
+}
+
+void final_win_desafio(int linhas, int colunas, int score)
+{
+    noecho();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);      // criação da janela desejada
+    box(win_final, 0, 0);                                      // box à volta da janela
+
+    FILE *file_score;                                       // criação de um ficheito
+    file_score = fopen("scoreboard_file_desafio.txt", "a"); // ficheiro ligado ao txt do scoreboard em mode de escrever (a de append)
+
+    char nome[28] = {0};
+    nome[0] = ' ';
+
+    wattron(win_final, A_BOLD); // atributo bold on
+    mvwprintw(win_final, 6, 17, "LOSER!");
+    wattroff(win_final, A_BOLD); // atributo bold off
+    mvwprintw(win_final, 8, 7, "A TUA PONTUACAO FOI DE %d", score);
+    mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
+    wrefresh(win_final);
+
+    WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5); // criação da janela para escrever o nome
+    box(win_nome, 0, 0);                                         // box à volta da janela
+    move(start_y + 13, start_x + 6);                             // move a escrita do nome para o sitio desejado
+    wrefresh(win_nome);
+
+    /*
+    loop que irá escrever o nome para o ecrã como tambem apagar se necessário
+    */
+    for (int i = 0; i < 28;) // maximo de 28 caracteres
+    {
+        char selected = getch();
+        if ((selected == 10) && (nome[0] != ' ')) // se a tecla selecionda for o enter -> acaba o loop
+        {
+            break;
+        }
+        else if (i < 27 && isprint(selected) && !isspace(selected)) // se a tecla selecionada estiver dentro dos parametros -> escreve a no ecra
+        {
+            nome[i] = selected;
+            mvwprintw(win_nome, 1, i + 1, "%c", selected);
+            wrefresh(win_nome);
+            i++;
+        }
+        else if ((selected == 127) && (i > 0)) // se a tecla for o backspace -> apaga o ultimo caracter e volta uma casa atras
+        {
+            i--;
+            nome[i] = ' ';
+            mvwaddch(win_nome, 1, i + 1, ' ');
+            wmove(win_nome, 1, i + 1);
+            wrefresh(win_nome);
+        }
+    }
+
+    wrefresh(win_nome);
+
+    if (file_score != NULL)                          // caso o ficheiro seja null
+        fprintf(file_score, "\n%s %d", nome, score); // imprime no ficheiro o nome e o score
+    fclose(file_score);                              // fecha o ficheiro
+}
+
+void final_multiplayer_win(int linhas, int colunas, int player1_hp, int player2_hp)
+{
+    noecho();
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);      // criação da janela desejada
+    box(win_final, 0, 0);                                      // box à volta da janela
+
+    if (player2_hp == 0)
+    {
+        wattron(win_final, A_BOLD); // atributo bold on
+        mvwprintw(win_final, 7, 12, "PLAYER 1 GANHOU!");
+        wattroff(win_final, A_BOLD); // atributo bold off
+        mvwprintw(win_final, 9, 2, "HOJE QUEM PAGA O JANTAR E O PLAYER 2");
+    }
+    else if (player1_hp == 0)
+    {
+        wattron(win_final, A_BOLD); // atributo bold on
+        mvwprintw(win_final, 7, 12, "PLAYER 2 GANHOU!");
+        wattroff(win_final, A_BOLD); // atributo bold off
+        mvwprintw(win_final, 9, 2, "HOJE QUEM PAGA O JANTAR E O PLAYER 1");
+    }
+    wattron(win_final, A_REVERSE);
+    mvwprintw(win_final, 12, 12, "   CONTINUAR   ");
+    wattroff(win_final, A_REVERSE);
+    wrefresh(win_final);
+
+    while (true)
+    {
+        char selected = getch();
+        if (selected == 10)
+            break;
+    }
+    clear();
 }
 

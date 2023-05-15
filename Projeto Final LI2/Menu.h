@@ -42,4 +42,11 @@ Contem uma variadade de opções, as quais podem ser todas acessadas.
 */
 void menu(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Game *game, Flag *flag, Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2);
 
+void final_win_desafio(int linhas, int colunas, int score);
+
+void final_multiplayer_win(int linhas, int colunas, int player1_hp, int player2_hp);
+
+
+
+
 #endif
