@@ -3,6 +3,8 @@
 
 #include "Menu.h"
 
+#include "Main.c"
+
 
 /*
 função que organiza o scoreboard de forma decrescente
@@ -76,7 +78,6 @@ void sort_scoreboard()
     }
     fclose(file_score); // fecha o ficheiro
 }
-
 void sort_scoreboard_desafio()
 {
     FILE *file_score;                                       // criação de um ficheito
@@ -149,17 +150,18 @@ void sort_scoreboard_desafio()
 /*
 função que vai buscar os dados do scoreboard e imprime os no ecrã
 */
-void scoreboard(int linhas, int colunas) 
+void scoreboard(int linhas, int colunas)
 {
-    WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2);
-    box(win_score, 0, 0);
+    WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2); // criação da janela desejada
+    box(win_score, 0, 0);                                      // box à volta da janela
 
-    FILE *file_score;
-    file_score = fopen("scoreboard_file.txt", "r");
+    FILE *file_score;                               // criação de um ficheiro
+    file_score = fopen("scoreboard_file.txt", "r"); // ficheiro ligado ao txt do scoreboard em mode de ler (r de reading)
 
     char name[100];
     int score;
     int i = 0;
+    int counter = 1; 
 
     start_color(); // inicializa as cores
     init_pair(7, 19, 16);           // par de cores para a borda do menu com azul médio
@@ -167,6 +169,9 @@ void scoreboard(int linhas, int colunas)
     init_pair(9, 14, 18);           // AZUL muito CLARO FUNDO E BORDA AZUL claro
     wbkgd(win_score, COLOR_PAIR(9));            // define o fundo da janela como azul muito claro
 
+    /*
+    loop que imprime linha a linha o nome e o score
+    */
     if (file_score != NULL)
     {
         while (fscanf(file_score, "%s %d", name, &score) != EOF)
@@ -179,7 +184,8 @@ void scoreboard(int linhas, int colunas)
                 {
                     mvwprintw(win_score, i + 1, j + 1, " ");
                 }
-                mvwprintw(win_score, i + 1, 1, "%s", name);
+                mvwprintw(win_score, i + 1, 1, "%d %s", counter, name);
+                counter++;
                 int nDigits = floor(log10(abs(score))) + 1;
                 mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
                 wattroff(win_score, COLOR_PAIR(8) | A_BOLD | A_REVERSE); // LETRA DO BOT SELECIONADA
@@ -187,16 +193,17 @@ void scoreboard(int linhas, int colunas)
             }
             else
             {
-                mvwprintw(win_score, i + 1, 1, "%s", name);
+                mvwprintw(win_score, i + 1, 1, "%d %s", counter, name);
+                counter++;
                 int nDigits = floor(log10(abs(score))) + 1;
                 mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
             }
             i++;
         }
-    } 
+    }
     wattroff(win_score, COLOR_PAIR(9) | A_NORMAL);
 
-    fclose(file_score);
+    fclose(file_score); // fecha o ficheiro
     wrefresh(win_score);
 }
 
@@ -222,7 +229,7 @@ void scoreboard_desafio(int linhas, int colunas)
         {
             if (i % 2 == 0)
             {
-                wattron(win_score, A_REVERSE);
+                wattron(win_score, COLOR_PAIR(7)); // tinha reverse 
                 for (int j = 0; j < colunas - 6; j++)
                 {
                     mvwprintw(win_score, i + 1, j + 1, " ");
@@ -231,7 +238,7 @@ void scoreboard_desafio(int linhas, int colunas)
                 counter++;
                 int nDigits = floor(log10(abs(score))) + 1;
                 mvwprintw(win_score, i + 1, colunas - 5 - nDigits, "%d", score);
-                wattroff(win_score, A_REVERSE);
+                wattroff(win_score, COLOR_PAIR(7));
             }
             else
             {
@@ -278,15 +285,8 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Gam
         box(win_jogo, 0, 0);
         for (int i = 0; i < 2; i++)
         {
-            if (i == highlight) {
-                wattron(win_jogo, COLOR_PAIR(8) | A_BOLD | A_REVERSE); // LETRA DO BOT SELECIONADA
-                wbkgd(win_jogo, COLOR_PAIR(9));
-            }
-            else {
-                wattron(win_jogo, COLOR_PAIR(8)); // FUNDO DE QUANDO SELEC O BOTAO
-                wbkgd(win_jogo, COLOR_PAIR(9));
-            }
-        
+            if (i == highlight)
+                wattron(win_jogo, COLOR_PAIR(7)); // tinha reverse
             switch (i)
             {
             case 0:
@@ -296,9 +296,8 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Gam
                 mvwprintw(win_jogo, 9 + i, 10, option2);
                 break;
             }
-            wattroff(win_jogo, COLOR_PAIR(9) | COLOR_PAIR(9) | A_BOLD | A_REVERSE);
-            wbkgd(win_jogo, COLOR_PAIR(9) | A_NORMAL);
-        } 
+            wattroff(win_jogo, COLOR_PAIR(7)); // tmb tinha reverse 
+        }
 
         selected = wgetch(win_jogo); // tecla premida
 
@@ -348,7 +347,7 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Gam
             loop = 0;
     }
 }
-// ------------------------------------------------ falta cor abaixo
+
 void multi_scoreboard_win(int linhas, int colunas)
 {
     int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
@@ -378,7 +377,7 @@ void multi_scoreboard_win(int linhas, int colunas)
         for (int i = 0; i < 2; i++)
         {
             if (i == highlight)
-                wattron(win_jogo, A_REVERSE);
+                wattron(win_jogo, COLOR_PAIR(7)); // tinha reverse???? 
             switch (i)
             {
             case 0:
@@ -388,7 +387,7 @@ void multi_scoreboard_win(int linhas, int colunas)
                 mvwprintw(win_jogo, 9 + i, 10, option2);
                 break;
             }
-            wattroff(win_jogo, A_REVERSE);
+            wattroff(win_jogo, COLOR_PAIR(7)); // tmb tinha reverse?
         }
 
         selected = wgetch(win_jogo); // tecla premida
@@ -446,12 +445,12 @@ void multi_scoreboard_win(int linhas, int colunas)
     }
 }
 
-void menu(int linhas, int colunas, Map mapa[][colunas])
+void menu(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Game *game, Flag *flag, Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2)
 {
 
     // cria uma janela inicial para que o menu.
     int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;
-    WINDOW *win = newwin(20, 40, start_y, start_x);  //  mudar algo no 20, 40 para o fundo ficar do tamanho do ecra
+    WINDOW *win = newwin(20, 40, start_y, start_x);
     wattron(win, COLOR_PAIR(8));
     box(win, 0, 0);
     wbkgd(win, COLOR_PAIR(7));
@@ -470,13 +469,6 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
     int highlight = 0;
     int loop = 1; // variavel para o loop do jogo
 
-    start_color(); // inicializa as cores
-    init_pair(7, 19, 16);           // borda menu --------------------------------------------
-    init_pair(8, 19, 17);           // AZUL MEDIO FUNDO DAS CORES E BRANCO LETRAS
-    init_pair(9, 17, 18);           // AZUL CLARO FUNDO E BORDA AZUL MEDIO 
-    wbkgd(win, 16);                 // define o fundo daa janela como azul
-
-
     /*
     Loop while que verifica a tecla que o utlizador clica e faz o highlight da opção desejada.
     Este tambem imprime todas as opções do menu para a janela.
@@ -486,9 +478,6 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
     while (loop == 1)
     {
         box(win, 0, 0);
-        // init_pair(8, 19, 17); 
-        //wborder(win, '\u2585', '\u2585', '\u2585', '\u2585', '+', '+', '+', '+');
-        // wbkgd(win, COLOR_PAIR(8) | A_NORMAL);
         for (int i = 0; i < 5; i++)
         {
             if (i == highlight) {
@@ -520,7 +509,6 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
             }
             wattroff(win, COLOR_PAIR(9) | COLOR_PAIR(9) | A_BOLD | A_REVERSE);
             wbkgd(win, COLOR_PAIR(9) | A_NORMAL);
-
         }
         selected = wgetch(win); // tecla premida
 
@@ -542,73 +530,55 @@ void menu(int linhas, int colunas, Map mapa[][colunas])
         {
             switch (highlight)
             {
-            case 0:                                    // Opção "COMECAR NOVO JOGO!"
-                multi_jogo_win(linhas, colunas, mapa); // inicia a janela de singleplayer/multiplayer
+            case 0:                                                                                                                                             // Opção "COMECAR NOVO JOGO!"
+                multi_jogo_win(linhas, colunas, mapa, mobs, game, flag, bullet_player1, bullet_player2, player1, player2); // inicia a janela de singleplayer/multiplayer
                 break;
             case 1: // Opção "QUERO SER DESAFIADO :D"
-                game_over = 0;
+                game->game_over = 0;
                 clear();
                 refresh();
-                do_create_map(linhas, colunas, mapa);
-                start_game_challenge(linhas, colunas, mapa);   // iniciamos o jogo
-                main_game_challenge(c, linhas, colunas, mapa); // damos update ao jogo
+                do_create_map(linhas, colunas, mapa, flag, game);
+                start_game_challenge(linhas, colunas, mapa, player1, player2);                                                                                                  // iniciamos o jogo
+                main_game_challenge(linhas, colunas, mapa, flag, game, player1, player2, mobs, bullet_player1, bullet_player2); // damos update ao jogo
                 clear();
                 refresh();
                 break;
-            case 2: // Opção "MANUAL DE INSTRUCOES"  -----------------------------  FAZER 
+            case 2: // Opção "MANUAL DE INSTRUCOES"
                 break;
             case 3: // Opção "SCOREBOARD!"
-                while (true)
-                {
-                    scoreboard(linhas, colunas); // inicia o scoreboard, caso o utilizador carregue no esc -> sair para o menu principal
-                    int selected = getch();
-                    if (selected == 27)
-                        break;
-                }
+                multi_scoreboard_win(linhas, colunas);
                 clear();
                 refresh();
-                break;
                 break;
             case 4:       // Opção "EXIT GAME"
                 loop = 0; // para sair do loop
                 break;
             }
-        }
+        } 
     }
 }
 
-void final_0_score_win(int linhas, int colunas){
+void final_0_score_win(int linhas, int colunas)
+{
 
-    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;  // cordenadas iniciais
-    WINDOW *win_final = newwin(20, 40, start_y, start_x);       // criação da janela desejada
-    box(win_final, 0, 0);                                       // box à volta da janela
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);      // criação da janela desejada
+    box(win_final, 0, 0);                                      // box à volta da janela
 
-    // define as cores para a janela
-    start_color();
-    init_pair(1, COLOR_BLUE, COLOR_WHITE);
-    init_pair(2, COLOR_CYAN, COLOR_BLUE);
+    wattron(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold on
+    mvwprintw(win_final, 7, 5, "       0 PONTOS? LOSER!      ");
+    wattroff(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold off
 
-    // define a cor padrão da janela como a cor 1
-    wattrset(win_final, COLOR_PAIR(1));
-
-    wattron(win_final, A_BOLD);  // atributo bold on
-    mvwprintw(win_final,  7, 5, "       0 PONTOS? LOSER!      ");
-    wattroff(win_final, A_BOLD);  // atributo bold off
-    mvwprintw(win_final,  9, 5, "COM ESSA PONTUACAO NEM MERCES"); 
+    mvwprintw(win_final, 9, 5, "COM ESSA PONTUACAO NEM MERCES");
     mvwprintw(win_final, 10, 5, "    IR PARA O SCOREBOARD!    ");
     wrefresh(win_final);
 
-    // muda para a cor 2 e desenha o botão "CONTINUAR"
-    wattrset(win_final, COLOR_PAIR(2));
-    wattron(win_final, A_REVERSE); // atributo reverse on
+    wattron(win_final, A_REVERSE | COLOR_PAIR(9)); // atributo reverse on
     mvwprintw(win_final, 13, 8, "        CONTINUAR        ");
-    wattroff(win_final, A_REVERSE); // atributo reverse off
+    wattroff(win_final, A_REVERSE | COLOR_PAIR(9)); // atributo reverse off
     wrefresh(win_final);
+    // loop que espera pela tecla enter para continuar
 
-    // volta para a cor padrão da janela
-    wattrset(win_final, COLOR_PAIR(1));
-
-    // espera pela tecla enter para continuar
     while (true)
     {
         char selected = getch();
@@ -624,17 +594,16 @@ void final_0_score_win(int linhas, int colunas){
 void final_win(int linhas, int colunas, int score)
 {
     noecho();
-    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20;  // cordenadas iniciais
-    WINDOW *win_final = newwin(20, 40, start_y, start_x);       // criação da janela desejada
-    box(win_final, 0, 0);                                       // box à volta da janela
+    int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
+    WINDOW *win_final = newwin(20, 40, start_y, start_x);      // criação da janela desejada
+    box(win_final, 0, 0);                                      // box à volta da janela
 
-    FILE *file_score;                                           // criação de um ficheito
-    file_score = fopen("scoreboard_file.txt", "a");             // ficheiro ligado ao txt do scoreboard em mode de escrever (a de append)
+    FILE *file_score;                               // criação de um ficheito
+    file_score = fopen("scoreboard_file.txt", "a"); // ficheiro ligado ao txt do scoreboard em mode de escrever (a de append)
 
     char nome[28] = {0};
     nome[0] = ' ';
 
-    start_color(); // inicializa as cores
     init_pair(7, 19, 16);           // par de cores para a borda do menu com azul médio
     init_pair(8, 19, 17);           // AZUL claro FUNDO E letras brancas
     init_pair(9, 14, 18);           // AZUL muito CLARO FUNDO E BORDA AZUL claro
@@ -650,22 +619,18 @@ void final_win(int linhas, int colunas, int score)
     WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5); // criação da janela para escrever o nome
     box(win_nome, 0, 0);                                         // box à volta da janela
     move(start_y + 13, start_x + 6);                             // move a escrita do nome para o sitio desejado
-    wrefresh(win_nome); 
-
-    int check = 0; // variavel para sair da janela
-
+    wrefresh(win_nome);
 
     /*
     loop que irá escrever o nome para o ecrã como tambem apagar se necessário
     */
-    for (int i = 0; i < 28;)  //maximo de 28 caracteres
+    for (int i = 0; i < 28;) // maximo de 28 caracteres
     {
         char selected = getch();
         if ((selected == 10) && (nome[0] != ' ')) // se a tecla selecionda for o enter -> acaba o loop
         {
             wattron(win_final, COLOR_PAIR(8) | A_BOLD | A_REVERSE); // LETRA DO BOT SELECIONADA
             wbkgd(win_final, COLOR_PAIR(9));
-            check = 1;
             break;
         }
         else if (i < 27 && isprint(selected) && !isspace(selected)) // se a tecla selecionada estiver dentro dos parametros -> escreve a no ecra
@@ -691,11 +656,11 @@ void final_win(int linhas, int colunas, int score)
 
     wrefresh(win_nome);
 
-    if (file_score != NULL) // caso o ficheiro seja null
-        fprintf(file_score, "\n%s %d", nome, score);  // imprime no ficheiro o nome e o score
-    fclose(file_score); // fecha o ficheiro
+    if (file_score != NULL)                          // caso o ficheiro seja null
+        fprintf(file_score, "\n%s %d", nome, score); // imprime no ficheiro o nome e o score
+    fclose(file_score);                              // fecha o ficheiro
 }
-// ----------------------------------------- falta cor abaixo 
+
 void pause_win(int linhas, int colunas)
 {
     int start_y = linhas / 2 - 15, start_x = colunas / 2 - 30; // cordenadas inicias
@@ -707,14 +672,17 @@ void pause_win(int linhas, int colunas)
     O processo seguinte imprime para o ecrã a msg que é necessária.
     Neste caso imprimime-se duas frases com o atributo de BOLD e uma frase com o atributo de REVERSE(cores reversas).
     */
-    wattron(win_pause, A_BOLD); // atributo bold on
+    wattron(win_pause, A_BOLD | COLOR_PAIR(7)); // atributo bold on
     mvwprintw(win_pause, 11, 12, "    O MENU DE PAUSA E PARA FRACOS    ");
     mvwprintw(win_pause, 13, 12, "CARREGA NO BOTAO ENTER PARA CONTINUAR");
-    wattroff(win_pause, A_BOLD);   // atributo bold off
-    wattron(win_pause, A_REVERSE); // atributo reverse on
+    wattroff(win_pause, A_BOLD | COLOR_PAIR(7));   // atributo bold off
+
+    wattron(win_pause, A_REVERSE | COLOR_PAIR(9)); // atributo reverse on
     mvwprintw(win_pause, 17, 18, "        CONTINUAR        ");
-    wattroff(win_pause, A_REVERSE); // atributo reverse off
+    wattroff(win_pause, A_REVERSE | COLOR_PAIR(9)); // atributo reverse off
+
     wrefresh(win_pause);
+
     // loop que espera pela tecla enter para continuar
     while (true)
     {
@@ -726,7 +694,7 @@ void pause_win(int linhas, int colunas)
     wrefresh(win_pause);
     refresh();
 }
-// ------------------------------------------ falta cor abaixo 
+
 void final_win_desafio(int linhas, int colunas, int score)
 {
     noecho();
@@ -740,15 +708,16 @@ void final_win_desafio(int linhas, int colunas, int score)
     char nome[28] = {0};
     nome[0] = ' ';
 
-    wattron(win_final, A_BOLD); // atributo bold on
+    wattron(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold on
     mvwprintw(win_final, 6, 17, "LOSER!");
-    wattroff(win_final, A_BOLD); // atributo bold off
+    wattroff(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold off
     mvwprintw(win_final, 8, 7, "A TUA PONTUACAO FOI DE %d", score);
     mvwprintw(win_final, 10, 8, "NOME PARA O SCOREBOARD:");
     wrefresh(win_final);
 
     WINDOW *win_nome = newwin(3, 30, start_y + 12, start_x + 5); // criação da janela para escrever o nome
     box(win_nome, 0, 0);                                         // box à volta da janela
+    wattron(win_nome, COLOR_PAIR(8));
     move(start_y + 13, start_x + 6);                             // move a escrita do nome para o sitio desejado
     wrefresh(win_nome);
 
@@ -785,7 +754,7 @@ void final_win_desafio(int linhas, int colunas, int score)
         fprintf(file_score, "\n%s %d", nome, score); // imprime no ficheiro o nome e o score
     fclose(file_score);                              // fecha o ficheiro
 }
-// ----------------------------------------- falta cor abaixo
+
 void final_multiplayer_win(int linhas, int colunas, int player1_hp, int player2_hp)
 {
     noecho();
@@ -795,21 +764,21 @@ void final_multiplayer_win(int linhas, int colunas, int player1_hp, int player2_
 
     if (player2_hp == 0)
     {
-        wattron(win_final, A_BOLD); // atributo bold on
+        wattron(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold on
         mvwprintw(win_final, 7, 12, "PLAYER 1 GANHOU!");
-        wattroff(win_final, A_BOLD); // atributo bold off
+        wattroff(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold off
         mvwprintw(win_final, 9, 2, "HOJE QUEM PAGA O JANTAR E O PLAYER 2");
     }
     else if (player1_hp == 0)
     {
-        wattron(win_final, A_BOLD); // atributo bold on
+        wattron(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold on
         mvwprintw(win_final, 7, 12, "PLAYER 2 GANHOU!");
-        wattroff(win_final, A_BOLD); // atributo bold off
+        wattroff(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold off
         mvwprintw(win_final, 9, 2, "HOJE QUEM PAGA O JANTAR E O PLAYER 1");
     }
-    wattron(win_final, A_REVERSE);
+    wattron(win_final, A_REVERSE | COLOR_PAIR(9));
     mvwprintw(win_final, 12, 12, "   CONTINUAR   ");
-    wattroff(win_final, A_REVERSE);
+    wattroff(win_final, A_REVERSE | COLOR_PAIR(9));
     wrefresh(win_final);
 
     while (true)
@@ -820,4 +789,3 @@ void final_multiplayer_win(int linhas, int colunas, int player1_hp, int player2_
     }
     clear();
 }
-
