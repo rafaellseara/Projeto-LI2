@@ -515,7 +515,7 @@ void menu(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Game *game, F
                 clear();
                 refresh();
                 do_create_map(linhas, colunas, mapa, flag, game);
-                start_game_challenge(linhas, colunas, mapa, player1, player2);                                                                                                  // iniciamos o jogo
+                start_game_challenge(linhas, colunas, mapa, player1, player2, mobs);                                                                                                  // iniciamos o jogo
                 main_game_challenge(linhas, colunas, mapa, flag, game, player1, player2, mobs, bullet_player1, bullet_player2); // damos update ao jogo
                 clear();
                 refresh();

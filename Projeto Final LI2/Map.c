@@ -4,8 +4,6 @@
 #include "Menu.h"
 #include "Map.h"
 
-
-
 void do_concat_walls(int linhas, int colunas, Map mapa[][colunas])
 {
     // usamos mapa auxiliar pois se alterassemos imediatamente no mapa ia dar asneira pois nao funcionava da maneira que queremos
@@ -69,8 +67,6 @@ void do_create_map(int linhas, int colunas, Map mapa[][colunas], Flag *flag, Gam
 
 void do_print_map(int linhas, int colunas, Map mapa[][colunas])
 {
-    init_pair(1, 88, 88);
-    init_pair(2, 12, 15);
     for (int i = 0; i < linhas; i++)
     {
         for (int j = 0; j < colunas; j++)
@@ -88,6 +84,12 @@ void do_print_map(int linhas, int colunas, Map mapa[][colunas])
                 mvaddch(i, j, mapa[i][j].visible_piece);
                 attroff(COLOR_PAIR(2));
             }
+            else if (mapa[i][j].visible_piece == 'I')
+            {
+                attron(COLOR_PAIR(10));
+                mvaddch(i, j, mapa[i][j].visible_piece);
+                attroff(COLOR_PAIR(10));
+            }
             else
             {
                 mvaddch(i, j, mapa[i][j].visible_piece);
@@ -100,7 +102,7 @@ void print_footer_single_player(Player *player1)
 {
     init_pair(4, 88, 13);
     attron(COLOR_PAIR(4));
-    mvprintw(0, 10, "Player1:    HP: %d  Score: %d  Gun: %d  Traps: %d  Ammo: %d", player1->hp, player1->score, player1->gun, player1->trapNumber, player1->ammo);
+    mvprintw(0, 10, "Player1:    HP: %d  Score: %d  Gun: %d  Traps: %d  Ammo: %d Aspirinas: %d Money: %d", player1->hp, player1->score, player1->gun, player1->trapNumber, player1->ammo, player1->aspirineNumber, player1->money);
     attroff(COLOR_PAIR(4));
 }
 void print_footer_multi_player(int linhas, int colunas, Player *player1, Player *player2)
@@ -116,7 +118,6 @@ void print_footer_challenge(Player *player1)
     mvprintw(0, 10, "Player1:    HP: %d  Score: %d  Gun: %d  Traps: %d  Ammo: %d  Nightsticks: %d", player1->hp, player1->score, player1->gun, player1->trapNumber, player1->ammo, player1->nightstickNumber);
     attroff(COLOR_PAIR(4));
 }
-
 
 void do_destroy_wall(char last_direction_moved, int y, int x, int linhas, int colunas, Map mapa[][colunas])
 {
@@ -146,8 +147,6 @@ void do_destroy_wall(char last_direction_moved, int y, int x, int linhas, int co
     }
     // a terceira condiçao serve para nao apagar as bordas
 }
-
-
 
 void createlight(int posy, int posx, int colunas, int linhas, int z, Player *player1)
 {

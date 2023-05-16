@@ -51,9 +51,12 @@ typedef struct player
     int trapNumber;       // number of bombs he has to use
     int nightstickNumber; // number of nightsticks
     int usingNightStick;
+    int aspirineNumber; // number of medicine to up hp
+    int money;
     int score;
     char character;
     char last_direction_moved;
+    int gun_three_on;
 } Player;
 
 typedef struct mob

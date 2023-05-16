@@ -16,6 +16,6 @@ funçao que inicia o jogo
 */
 void start_game_single_player(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Player *player1, Player *player2);
 void start_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Player *player1, Player *player2);
-void start_game_challenge(int linhas, int colunas, Map mapa[][colunas], Player *player1, Player *player2);
+void start_game_challenge(int linhas, int colunas, Map mapa[][colunas], Player *player1, Player *player2, Mob *mobs);
 
 #endif

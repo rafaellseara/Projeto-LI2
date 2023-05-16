@@ -25,7 +25,7 @@ void do_add_score(int game_type, Flag *flag, Game *game, Player *player1, Player
 /*
 funçao relativas às estruturas que tiram e acrescentam vida/amunição
 */
-void do_structure_aplications_single_player(int colunas, Map mapa[][colunas], Player *player1);
+void do_structure_aplications_single_player(int linhas, int colunas, Map mapa[][colunas], Player *player1, Mob *mobs);
 void do_structure_aplications_multi_player(int colunas, Map mapa[][colunas], Player *player1, Player *player2);
 
 #endif

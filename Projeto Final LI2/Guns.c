@@ -18,7 +18,7 @@ void change_player_weapon(char c, Player *player1)
     {
         player1->gun = 2;
     }
-    else if (c == '3') // Troca para teleguiada
+    else if (c == '3' && player1->gun_three_on == 1) // Troca para teleguiada
     {
         player1->gun = 3;
     }
@@ -370,7 +370,7 @@ void create_bullet(Bullet *bullet_player1, Bullet *bullet_player2, Player *playe
         }
     }
 }
-void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bullet_player1, Mob *mobs)
+void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bullet_player1, Mob *mobs, Player *player1)
 {
     for (int i = 0; i < 4; i++)
     {
@@ -381,7 +381,8 @@ void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bulle
             mobs[i].hp -= 250;
             if (mobs[i].hp <= 0)
             {
-                // meter a update mobs
+                player1->score++;
+                player1->money += 10;
                 update_mob(i, linhas, colunas, mapa, mobs);
             }
         }
@@ -396,11 +397,10 @@ void do_guns_aplications(int linhas, int colunas, Map mapa[][colunas], Game *gam
     create_bullet(bullet_player1, bullet_player2, player1, player2);
     bullet_collision(colunas, mapa, bullet_player1, bullet_player2);
     do_player_punch(game, linhas, colunas, mapa, player1, mobs);
-    bullet_hit_mobs(linhas, colunas, mapa, bullet_player1, mobs);
+    bullet_hit_mobs(linhas, colunas, mapa, bullet_player1, mobs, player1);
 }
 void do_guns_aplications_multi_player(int linhas, int colunas, Map mapa[][colunas], Game *game, Mob *mobs, Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2)
 {
-    // change_player_weapon(c);
     bullet_position(bullet_player1, bullet_player2, player1, player2);
     bullet_show_multi_player(game, player1, player2, bullet_player1, bullet_player2);
     create_bullet(bullet_player1, bullet_player2, player1, player2);

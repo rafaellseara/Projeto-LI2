@@ -7,6 +7,7 @@
 #include <string.h>
 
 
+
 #include "Menu.h"
 
 
@@ -31,8 +32,8 @@ int main()
     Flag flag = {0, 0, 0, 0};
     Bullet bullet_player1 = {0, 0, 0, 0, 0};
     Bullet bullet_player2 = {0, 0, 0, 0, 0};
-    Player player1 = {1, 2, 100, 10, 10, 100, 3, 5, 0, 0, '@', 'w'};
-    Player player2 = {2, 2, 100, 20, 20, 100, 3, 5, 0, 0, '@', '8'};
+    Player player1 = {1, 2, 100, 10, 10, 100, 3, 5, 0, 0, 0, 0, '@', 'w', 0};
+    Player player2 = {2, 2, 100, 20, 20, 100, 3, 5, 0, 0, 0, 0, '@', '8', 0};
     
 
     srand(time(NULL)); // funçao random com a seed do tempo para randomizar ainda mais
@@ -57,12 +58,17 @@ int main()
     init_color(13, 0, 0, 140);     // Azul Escuro
     init_color(14, 500, 400, 0);   // Amarelo
     init_color(15, 0, 225, 200);   // Azul Claro
+    init_color(20, 994, 994, 0);   // Amarelo
+    init_color(21, 994, 774, 0);   // Amarelo Torrado
+    init_color(22, 994,0,0);       // Vermelho vivo
     init_pair(1, 88, 88);          // paredes
     init_pair(2, 12, 15);          // lagos
     init_pair(3, 13, 13);          // escuro
     init_pair(4, 88, 13);          // score etc
     init_pair(5, 2, 14);           // jogador1
     init_pair(6, 14, 2);           // jogador2
+    init_pair(10, 21, 20);         // flag
+    init_pair(11, 22,22);          // mobs
 
     menu(linhas, colunas, mapa, mobs, &game, &flag, &bullet_player1, &bullet_player2, &player1, &player2);
 

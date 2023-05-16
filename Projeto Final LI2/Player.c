@@ -1,10 +1,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-
 #include "Menu.h"
 #include "Player.h"
-
 
 void player1_position(int linhas, int colunas, Player *player1)
 {
@@ -157,6 +155,8 @@ void do_player_punch(Game *game, int linhas, int colunas, Map mapa[][colunas], P
                     mobs[i].hp -= 25;
                     if (mobs[i].hp <= 0)
                     {
+                        player1->score++;
+                        player1->money += 10;
                         update_mob(i, linhas, colunas, mapa, mobs);
                     }
                 }
@@ -208,6 +208,11 @@ void do_update_map_single_player(int colunas, Map mapa[][colunas], int linhas, G
     {
         player1->usingNightStick = 1;
         player1->nightstickNumber -= 1;
+    }
+    else if (game->key_pressed == 'q' && player1->aspirineNumber > 0) // usar aspirina
+    {
+        player1->aspirineNumber -= 1;
+        player1->hp += 25;
     }
     else if (game->key_pressed == 'p')
     {
@@ -343,7 +348,7 @@ void do_add_score(int game_type, Flag *flag, Game *game, Player *player1, Player
 /*
 funçao relativas às estruturas que tiram e acrescentam vida/amunição
 */
-void do_structure_aplications_single_player(int colunas, Map mapa[][colunas], Player *player1)
+void do_structure_aplications_single_player(int linhas, int colunas, Map mapa[][colunas], Player *player1, Mob *mobs)
 {
     if (mapa[player1->positionY][player1->positionX].visible_piece == '~')
         player1->hp -= 4; // -4 no lago
@@ -353,6 +358,20 @@ void do_structure_aplications_single_player(int colunas, Map mapa[][colunas], Pl
         player1->ammo += 2; // +2 na muniçao
     else if (mapa[player1->positionY][player1->positionX].visible_piece == '^')
         player1->hp -= 20; // -20 na armadilha
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (mapa[mobs[i].positionY][mobs[i].positionX].visible_piece == '^')
+        {
+            mobs[i].hp -= 250;
+            if (mobs[i].hp <= 0)
+            {
+                player1->score++;
+                player1->money += 10;
+                update_mob(i, linhas, colunas, mapa, mobs);
+            }
+        }
+    }
 }
 void do_structure_aplications_multi_player(int colunas, Map mapa[][colunas], Player *player1, Player *player2)
 {

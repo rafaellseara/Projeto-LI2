@@ -307,6 +307,8 @@ void printMobs(Mob *mobs)
 {
     for (int i = 0; i < 4; i++)
     {
+        attron(COLOR_PAIR(11));
         mvaddch(mobs[i].positionY, mobs[i].positionX, '1');
+        attroff(COLOR_PAIR(11));
     }
 }
