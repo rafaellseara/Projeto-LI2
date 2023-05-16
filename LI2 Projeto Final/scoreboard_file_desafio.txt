@@ -1,0 +1,10 @@
+Preto 3
+sdaads 0
+. 2
+q 2
+f 0
+s 1
+ffd 4
+dw 0
+wd 1
+ds 1
