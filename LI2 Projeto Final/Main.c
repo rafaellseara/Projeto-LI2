@@ -51,15 +51,23 @@ int main()
     init_color(16, 21, 546, 994);  // Azul claro
     init_color(17, 198, 50, 0);    // Castanho
     init_color(18, 596, 0, 0);     // Castanho claro
+    init_color(19, 994,994,994);   // nao é bem para usar porque é preto
     init_color(20, 994, 994, 0);   // Amarelo
     init_color(21, 994, 774, 0);   // Amarelo Torrado
     init_color(22, 994, 0, 0);     // Vermelho vivo
+
+    init_color(23, 101, 546, 994); // azul mais escuro dos 3
+    init_color(24, 596, 795, 994); // azul medio
+    init_color(25, 897, 943, 994); // azul claro
     init_pair(1, 88, 88);  // paredes
     init_pair(2, 16, 16);  // lagos
     init_pair(3, 13, 13);  // escuro
     init_pair(4, 88, 13);  // score etc
     init_pair(5, 2, 14);   // jogador1
     init_pair(6, 14, 2);   // jogador2
+    init_pair(7, 23, 19);           // par de cores para a borda do menu com azul médio
+    init_pair(8, 19, 24);           // AZUL claro FUNDO E letras brancas
+    init_pair(9, 19, 25);           // AZUL muito CLARO FUNDO E BORDA AZUL claro
     init_pair(10, 21, 20); // flag
     init_pair(11, 22, 22); // mobs
     init_pair(12, 17, 18); // ammo

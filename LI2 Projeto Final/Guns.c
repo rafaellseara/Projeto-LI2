@@ -6,13 +6,15 @@
 /*
 esta funçao troca as armas do jogadores
 */
-void change_player_weapon(char c, Player *player1)
+void change_player_weapon(char c, Player *player1, Bullet *bullet_player1)
 {
     // Se a gun no struct do jogador estiver 1->Punho 2->Pistola
     // Para Trocar Armas
     if (c == '1') // Trocar para soco
     {
         player1->gun = 1;
+        bullet_player1->appearing = 0;
+        bullet_player1->number = 0;
     }
     else if (c == '2') // Troca para pistola
     {
@@ -407,7 +409,7 @@ void bullet_hit_player(Player *player1, Player *player2, Bullet *bullet_player1,
 
 void do_guns_aplications(int linhas, int colunas, Map mapa[][colunas], Game *game, Mob *mobs, Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2)
 {
-    change_player_weapon(game->key_pressed, player1);
+    change_player_weapon(game->key_pressed, player1, bullet_player1);
     bullet_position(bullet_player1, bullet_player2, player1, player2);
     bullet_show(game, player1, bullet_player1, player2, bullet_player2);
     create_bullet(bullet_player1, bullet_player2, player1, player2);

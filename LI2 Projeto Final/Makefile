@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -O2
 LDFLAGS = -lncurses -lm
-TARGET = jogo
+TARGET = game
 
 SRCS = Main.c Menu.c Mobs.c Map.c Game.c Guns.c Player.c
 OBJS = $(SRCS:.c=.o)

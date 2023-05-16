@@ -3,7 +3,7 @@
 
 
 
-void change_player_weapon(char c, Player *player1);
+void change_player_weapon(char c, Player *player1, Bullet *bullet_player1);
 
 void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2);
 /*
