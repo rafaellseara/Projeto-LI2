@@ -199,7 +199,7 @@ void mob_movement_far(int colunas, Map mapa[][colunas], Mob *mobs)
     for (int i = 0; i < 4; i++)
     {
 
-        if ((mobs[i].is_in_mob_view == 0))
+        if (mobs[i].is_in_mob_view == 0)
         {
             if (mobs[i].quadrado_down < 4)
             {
