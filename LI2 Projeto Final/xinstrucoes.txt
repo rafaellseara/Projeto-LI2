@@ -1,0 +1,38 @@
+Elementos do jogo: 
+
+I - moedas - cada moeda apanhada aumenta 1 ao score e 10 ao money 
+1 - monstros - perseguem o jogador e matam-no
+@ - jogador na posição inicial 
+> - jogador
++++ - casa para curar - aumenta o HP  do jogador
+- - - - ponto de recolha de armas - permite ao jogador reabastecer as suas armas
+! ! ! - farol - ilumina o mapa 
+* - arma - serve para matar os monstros
+money - serve para comprar coisas na loja
+
+Funcionalidades:
+
+tecla 'p' - coloca o jogo em pausa
+tecla '1' - ativa os murros 
+tecla '3' - ativa a arma teleguiada 
+tecla 'espaço' - laçar os tiros/murros  
+tecla 'e' - colocar armadilhas
+tecla 's' - andar para trás
+tecla 'w' - andar para a frente 
+tecla 'a' - andar para a esquerda
+tecla 'd' - andar para a direita 
+tecla 'b' - abre a loja do jogo 
+
+No modo mutiplayer: 
+
+tecla '2' - andar para trás
+tecla '8' - andar para a frente 
+tecla '4' - andar para a esquerda
+tecla '6' - andar para a direita 
+tecla 'x' - partir parede 
+
+Tipos de armas:
+
+murros 
+arma 
+arma teleguiada - move-se consoante o movimento do jogador. Para além disso, diminui uma bala a cada vez que se muda de direção.
