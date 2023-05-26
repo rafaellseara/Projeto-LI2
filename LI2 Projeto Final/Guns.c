@@ -372,36 +372,76 @@ void create_bullet(Bullet *bullet_player1, Bullet *bullet_player2, Player *playe
         }
     }
 }
+
+int bullet_in_Y_mob_range(Bullet *bullet_player1, Mob *mobs, int i)
+{
+    if (bullet_player1->positionX == mobs[i].positionX && (bullet_player1->positionY == mobs[i].positionY || bullet_player1->positionY == mobs[i].positionY - 1 || bullet_player1->positionY == mobs[i].positionY + 1))
+        return 1;
+    else
+        return 0;
+}
+
+int bullet_in_X_mob_range(Bullet *bullet_player1, Mob *mobs, int i)
+{
+    if (bullet_player1->positionY == mobs[i].positionY && (bullet_player1->positionX == mobs[i].positionX || bullet_player1->positionX == mobs[i].positionX - 1 || bullet_player1->positionX == mobs[i].positionX + 1))
+        return 1;
+    else
+        return 0;
+}
+
+int bullet_in_vertical(Bullet *bullet_player1)
+{
+    return (bullet_player1->direction == 1 || bullet_player1->direction == 3 ? 1 : 0);
+}
+
+int bullet_in_horizontal(Bullet *bullet_player1)
+{
+    return (bullet_player1->direction == 2 || bullet_player1->direction == 4 ? 1 : 0);
+}
+
+void bullet_disappears(Bullet *bullet_player1)
+{
+    bullet_player1->appearing = 0; // a bala desaparece
+    bullet_player1->number = 0;    // Assim a contagem volta a zero
+}
+
+void update_player_score_money(Player *player1)
+{
+    player1->score++;
+    player1->money += 10;
+}
+
+int mob_is_dead(Mob *mobs, int i)
+{
+    return (mobs[i].hp <= 0 ? 1 : 0);
+}
+
 void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bullet_player1, Mob *mobs, Player *player1)
 {
     for (int i = 0; i < 4; i++)
     {
-        if (bullet_player1->direction == 1 || bullet_player1->direction == 3)
+        if (bullet_in_vertical(bullet_player1))
         {
-            if (bullet_player1->positionX == mobs[i].positionX && (bullet_player1->positionY == mobs[i].positionY || bullet_player1->positionY == mobs[i].positionY - 1 || bullet_player1->positionY == mobs[i].positionY + 1))
+            if (bullet_in_Y_mob_range(bullet_player1, mobs, i))
             {
-                bullet_player1->appearing = 0; // a bala desaparece
-                bullet_player1->number = 0;    // Assim a contagem volta a zero
+                bullet_disappears(bullet_player1);
                 mobs[i].hp -= 250;
-                if (mobs[i].hp <= 0)
+                if (mob_is_dead(mobs, i));
                 {
-                    player1->score++;
-                    player1->money += 10;
+                    update_player_score_money(player1);
                     update_mob(i, linhas, colunas, mapa, mobs);
                 }
             }
         }
-        else if (bullet_player1->direction == 2 || bullet_player1->direction == 4)
+        else if (bullet_in_horizontal(bullet_player1))
         {
-            if (bullet_player1->positionY == mobs[i].positionY && (bullet_player1->positionX == mobs[i].positionX || bullet_player1->positionX == mobs[i].positionX - 1 || bullet_player1->positionX == mobs[i].positionX + 1))
+            if (bullet_in_X_mob_range(bullet_player1, mobs, i))
             {
-                bullet_player1->appearing = 0; // a bala desaparece
-                bullet_player1->number = 0;    // Assim a contagem volta a zero
+                bullet_disappears(bullet_player1);
                 mobs[i].hp -= 250;
-                if (mobs[i].hp <= 0)
+                if (mob_is_dead(mobs, i))
                 {
-                    player1->score++;
-                    player1->money += 10;
+                    update_player_score_money(player1);
                     update_mob(i, linhas, colunas, mapa, mobs);
                 }
             }
@@ -409,18 +449,26 @@ void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bulle
     }
 }
 
+int bullet_is_showing(Bullet *bullet_player1)
+{
+    return (bullet_player1->appearing == 1 ? 1 : 0);
+}
+
+int equal_bullet_to_player_position(Bullet *bullet, Player *player)
+{
+    return (bullet->positionX == player->positionX && bullet->positionY == player->positionY ? 1 : 0);
+}
+
 void bullet_hit_player(Player *player1, Player *player2, Bullet *bullet_player1, Bullet *bullet_player2)
 {
-    if (bullet_player1->appearing == 1 && bullet_player1->positionX == player2->positionX && bullet_player1->positionY == player2->positionY)
+    if (bullet_is_showing(bullet_player1) && equal_bullet_to_player_position(bullet_player1, player2))
     {
-        bullet_player1->appearing = 0; // a bala desaparece
-        bullet_player1->number = 0;    // Assim a contagem volta a zero
+        bullet_disappears(bullet_player1);
         player2->hp -= 25;
     }
-    if (bullet_player2->appearing == 1 && bullet_player2->positionX == player1->positionX && bullet_player2->positionY == player1->positionY)
+    if (bullet_is_showing(bullet_player1) && equal_bullet_to_player_position(bullet_player2, player1))
     {
-        bullet_player2->appearing = 0; // a bala desaparece
-        bullet_player2->number = 0;    // Assim a contagem volta a zero
+        bullet_disappears(bullet_player2);
         player1->hp -= 25;
     }
 }

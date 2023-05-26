@@ -1,11 +1,8 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-
 #include "Menu.h"
 #include "Game.h"
-
-
 
 void do_check_nightstick(Game *game, Player *player1)
 {
@@ -21,19 +18,54 @@ void do_check_nightstick(Game *game, Player *player1)
     }
 }
 
+// dar reset as variaveis do player
+void reset_player(Player *player1)
+{
+    player1->hp = 100;
+    player1->trapNumber = 3;
+    player1->ammo = 100;
+    player1->score = 0;
+    player1->gun_three_on = 0;
+    player1->last_direction_moved = 'w';
+    player1->character = '@';
+    player1->aspirineNumber = 0;
+    player1->money = 0;
+    player1->usingNightStick = 0;
+    player1->nightstickNumber = 5;
+}
+
+// mandar para janela do scoreboard
+void go_to_scoreboard_win(Player *player1, int linhas, int colunas)
+{
+    if (player1->score > 0)
+        final_win(linhas, colunas, player1->score);
+    if (player1->score == 0)
+        final_0_score_win(linhas, colunas);
+}
+
+// verificar se o jogador está vivo
+int player_is_alive(Player *player1)
+{
+    return (player1->hp > 0 ? 1 : 0);
+}
+//verificar que o jogo ainda nao acabou
+int game_is_not_over(Game *game)
+{
+    return (game->game_over == 0 ? 1 : 0);
+}
 
 void main_game_single_player(int linhas, int colunas, Map mapa[][colunas], Game *game, Player *player1, Player *player2, Mob *mobs, Flag *flag, Bullet *bullet_player1, Bullet *bullet_player2)
 {
-    while (game->game_over == 0)
+    while (game_is_not_over(game))
     {
-        if (player1->hp > 0)
+        if (player_is_alive(player1))
         {
             cbreak();
             timeout(300);
             game->key_pressed = getch();
             do_structure_aplications_single_player(linhas, colunas, mapa, player1, mobs);
             do_update_map_single_player(colunas, mapa, linhas, game, player1, mobs); // aqui fazemos o update do mapa sempre que o utilizador prima uma tecla
-            do_insert_flag(linhas, colunas, mapa, flag, game);           // inserir a flag
+            do_insert_flag(linhas, colunas, mapa, flag, game);                       // inserir a flag
             do_add_score(1, flag, game, player1, player2);
             do_print_map(linhas, colunas, mapa); // imprimimos o mapa para o utilizador
             do_mob_apps(colunas, mapa, player1, mobs);
@@ -48,23 +80,16 @@ void main_game_single_player(int linhas, int colunas, Map mapa[][colunas], Game 
             game->game_over = 1;
             clear();
             refresh();
-            if (player1->score > 0)
-                final_win(linhas, colunas, player1->score);
-            if (player1->score == 0)
-                final_0_score_win(linhas, colunas);
-            player1->hp = 100;
-            player1->trapNumber = 3;
-            player1->ammo = 100;
-            player1->score = 0;
+            go_to_scoreboard_win(player1, linhas, colunas);
             game->is_flag_placed = 0;
         }
     }
 }
 void main_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Game *game, Player *player1, Player *player2, Flag *flag, Mob *mobs, Bullet *bullet_player1, Bullet *bullet_player2)
 {
-    while (game->game_over == 0)
+    while (game_is_not_over(game))
     {
-        if (player1->hp > 0 && player2->hp > 0)
+        if (player_is_alive(player1) && player_is_alive(player2))
         {
             cbreak();
             timeout(200);
@@ -84,19 +109,15 @@ void main_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Game *
             clear();
             refresh();
             final_multiplayer_win(linhas, colunas, player1->hp, player2->hp);
-            player1->hp = 100;
-            player1->score = 0;
-            player2->hp = 100;
-            player2->score = 0;
             game->is_flag_placed = 0;
         }
     }
 }
 void main_game_challenge(int linhas, int colunas, Map mapa[][colunas], Flag *flag, Game *game, Player *player1, Player *player2, Mob *mobs, Bullet *bullet_player1, Bullet *bullet_player2)
 {
-    while (game->game_over == 0)
+    while (game_is_not_over(game))
     {
-        if (player1->hp > 0)
+        if (player_is_alive(player1))
         {
             cbreak();
             timeout(200);
@@ -121,8 +142,6 @@ void main_game_challenge(int linhas, int colunas, Map mapa[][colunas], Flag *fla
             clear();
             refresh();
             final_win_desafio(linhas, colunas, player1->score);
-            player1->hp = 100;
-            player1->score = 0;
             game->is_flag_placed = 0;
         }
     }
@@ -131,6 +150,7 @@ void main_game_challenge(int linhas, int colunas, Map mapa[][colunas], Flag *fla
 void start_game_single_player(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Player *player1, Player *player2)
 {
     do_print_map(linhas, colunas, mapa); // imprimimos o mapa inicial
+    reset_player(player1);
     // adicionamos aqui o jogador para termos o mapa com as posiçoes de lagos e assim nao sobrepostas
     player1_position(linhas, colunas, player1); // acertar a posiçao do jogador
     do_add_player(1, player1, player2);
@@ -142,6 +162,8 @@ void start_game_single_player(int linhas, int colunas, Map mapa[][colunas], Mob 
 void start_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Player *player1, Player *player2)
 {
     do_print_map(linhas, colunas, mapa);
+    reset_player(player1);
+    reset_player(player2);
     player1_position(linhas, colunas, player1);
     player2_position(linhas, colunas, player2);
     do_add_player(2, player1, player2);
@@ -150,6 +172,7 @@ void start_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Playe
 void start_game_challenge(int linhas, int colunas, Map mapa[][colunas], Player *player1, Player *player2, Mob *mobs)
 {
     do_print_map(linhas, colunas, mapa);
+    reset_player(player1);
     player1_position(linhas, colunas, player1);
     do_add_player(1, player1, player2);
     initializeMobs(linhas, colunas, mapa, mobs);
@@ -158,6 +181,3 @@ void start_game_challenge(int linhas, int colunas, Map mapa[][colunas], Player *
     create_light_lighthouse(linhas, colunas, mapa, mobs);
     print_footer_challenge(player1);
 }
-
-
-

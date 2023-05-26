@@ -607,7 +607,7 @@ void final_0_score_win(int linhas, int colunas)
     wattron(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold on
     mvwprintw(win_final, 7, 5, "       0 PONTOS? LOSER!      ");
     wattroff(win_final, A_BOLD | COLOR_PAIR(7)); // atributo bold off
-    mvwprintw(win_final, 9, 5, "COM ESSA PONTUACAO NEM MERCES");
+    mvwprintw(win_final, 9, 5, "COM ESSA PONTUACAO NEM MERECES");
     mvwprintw(win_final, 10, 5, "    IR PARA O SCOREBOARD!    ");
     wrefresh(win_final);
 

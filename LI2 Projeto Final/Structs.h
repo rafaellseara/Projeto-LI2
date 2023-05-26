@@ -52,7 +52,7 @@ typedef struct player
     int nightstickNumber; // number of nightsticks
     int usingNightStick;
     int aspirineNumber; // number of medicine to up hp
-    int money;
+    int money; //money he has
     int score;
     char character;
     char last_direction_moved;

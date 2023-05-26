@@ -62,7 +62,7 @@ int main()
     init_pair(1, 88, 88);  // paredes
     init_pair(2, 16, 16);  // lagos
     init_pair(3, 13, 13);  // escuro
-    init_pair(4, 88, 13);  // score etc
+    init_pair(4, 19, 13);  // score etc
     init_pair(5, 2, 14);   // jogador1
     init_pair(6, 14, 2);   // jogador2
     init_pair(7, 23, 19);           // par de cores para a borda do menu com azul médio
@@ -72,6 +72,7 @@ int main()
     init_pair(11, 22, 22); // mobs
     init_pair(12, 17, 18); // ammo
     init_pair(13, 18, 17); // vida
+    
 
     menu(linhas, colunas, mapa, mobs, &game, &flag, &bullet_player1, &bullet_player2, &player1, &player2);
 
