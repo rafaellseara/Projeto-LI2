@@ -148,6 +148,52 @@ void sort_scoreboard_desafio()
 /*
 função que vai buscar os dados do scoreboard e imprime os no ecrã
 */
+
+
+// manual de instruções ------------------------------------------------------------------------------
+
+void exibirManualInstrucoes(int linhas, int colunas) 
+{
+
+    WINDOW *win_instrucoes = newwin(linhas - 2, colunas - 4, 1, 2); // criação da janela desejada
+    box(win_instrucoes, 0, 0);
+    wbkgd(win_instrucoes, COLOR_PAIR(7));    
+
+    FILE *arquivo = fopen("xinstrucoes.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o manual de instruções.\n");
+        return;
+    }
+
+    char linha[1000];
+    int linha_atual = 1;
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        mvwprintw(win_instrucoes, linha_atual, 1, "%s", linha);
+        linha_atual++;
+        wrefresh(win_instrucoes);
+    }
+
+    fclose(arquivo);
+    mvwprintw(win_instrucoes, linhas - 3, 1, "Pressione a tecla 'x' para voltar ao menu.");
+    wrefresh(win_instrucoes);
+    
+    int tecla;
+    while ((tecla = getch()) != 'x') {
+        // Aguarda até que a tecla 'x' seja pressionada
+    }
+
+    wclear(win_instrucoes); // limpa o conteúdo da janela do manual de instruções
+    wrefresh(win_instrucoes); // atualiza a janela vazia
+
+    clear(); // limpa a tela
+
+    delwin(win_instrucoes); 
+
+}
+
+// manual de instruções ------------------------------------------------------------------------------
+
+
 void scoreboard(int linhas, int colunas)
 {
     WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2); // criação da janela desejada
@@ -197,6 +243,7 @@ void scoreboard(int linhas, int colunas)
     fclose(file_score); // fecha o ficheiro
     wrefresh(win_score);
 }
+
 void scoreboard_desafio(int linhas, int colunas)
 {
     WINDOW *win_score = newwin(linhas - 2, colunas - 4, 1, 2); // criação da janela desejada
@@ -244,10 +291,12 @@ void scoreboard_desafio(int linhas, int colunas)
     fclose(file_score); // fecha o ficheiro
     wrefresh(win_score);
 }
+
 /*
 Função que imprime a janela de escolha entre o multiplayer e singleplayer do jogo.
 Assim que o utilizador escolhe uma das opções e carrega no enter a janela fecha.
 */
+
 void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Game *game, Flag *flag, Bullet *bullet_player1, Bullet *bullet_player2, Player *player1, Player *player2)
 {
     int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
@@ -339,6 +388,7 @@ void multi_jogo_win(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Gam
             loop = 0;
     }
 }
+
 void multi_scoreboard_win(int linhas, int colunas)
 {
     int start_y = linhas / 2 - 10, start_x = colunas / 2 - 20; // cordenadas iniciais
@@ -531,6 +581,7 @@ void menu(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Game *game, F
                 refresh();
                 break;
             case 2: // Opção "MANUAL DE INSTRUCOES"
+                exibirManualInstrucoes(linhas, colunas);
                 break;
             case 3: // Opção "SCOREBOARD!"
                 multi_scoreboard_win(linhas, colunas);

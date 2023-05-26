@@ -376,16 +376,34 @@ void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bulle
 {
     for (int i = 0; i < 4; i++)
     {
-        if (bullet_player1->positionX == mobs[i].positionX && bullet_player1->positionY == mobs[i].positionY)
+        if (bullet_player1->direction == 1 || bullet_player1->direction == 3)
         {
-            bullet_player1->appearing = 0; // a bala desaparece
-            bullet_player1->number = 0;    // Assim a contagem volta a zero
-            mobs[i].hp -= 250;
-            if (mobs[i].hp <= 0)
+            if (bullet_player1->positionX == mobs[i].positionX && (bullet_player1->positionY == mobs[i].positionY || bullet_player1->positionY == mobs[i].positionY - 1 || bullet_player1->positionY == mobs[i].positionY + 1))
             {
-                player1->score++;
-                player1->money += 10;
-                update_mob(i, linhas, colunas, mapa, mobs);
+                bullet_player1->appearing = 0; // a bala desaparece
+                bullet_player1->number = 0;    // Assim a contagem volta a zero
+                mobs[i].hp -= 250;
+                if (mobs[i].hp <= 0)
+                {
+                    player1->score++;
+                    player1->money += 10;
+                    update_mob(i, linhas, colunas, mapa, mobs);
+                }
+            }
+        }
+        else if (bullet_player1->direction == 2 || bullet_player1->direction == 4)
+        {
+            if (bullet_player1->positionY == mobs[i].positionY && (bullet_player1->positionX == mobs[i].positionX || bullet_player1->positionX == mobs[i].positionX - 1 || bullet_player1->positionX == mobs[i].positionX + 1))
+            {
+                bullet_player1->appearing = 0; // a bala desaparece
+                bullet_player1->number = 0;    // Assim a contagem volta a zero
+                mobs[i].hp -= 250;
+                if (mobs[i].hp <= 0)
+                {
+                    player1->score++;
+                    player1->money += 10;
+                    update_mob(i, linhas, colunas, mapa, mobs);
+                }
             }
         }
     }
