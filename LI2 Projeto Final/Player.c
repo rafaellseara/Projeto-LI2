@@ -6,7 +6,6 @@
 
 void player1_position(int linhas, int colunas, Player *player1)
 {
-
     // inserir o jogador 1 à esquerda do farol
     int centerY = linhas / 2;
     int centerX = colunas / 2;
@@ -16,7 +15,7 @@ void player1_position(int linhas, int colunas, Player *player1)
 void player2_position(int linhas, int colunas, Player *player2)
 {
 
-    // inserir o jogador 1 à esquerda do farol
+    // inserir o jogador 2 à direita do farol
     int centerY = linhas / 2;
     int centerX = colunas / 2;
     player2->positionY = centerY;
@@ -24,8 +23,6 @@ void player2_position(int linhas, int colunas, Player *player2)
 }
 void do_add_player(int game_type, Player *player1, Player *player2)
 {
-    init_pair(5, 2, 14);
-    init_pair(6, 14, 2);
     if (game_type == 1)
     {
         attron(COLOR_PAIR(5));
@@ -165,66 +162,77 @@ void do_player_punch(Game *game, int linhas, int colunas, Map mapa[][colunas], P
     }
 }
 
-/*
-esta funçao faz o update do mapa, sempre que o jogador se mexe
-*/
 void do_update_map_single_player(int colunas, Map mapa[][colunas], int linhas, Game *game, Player *player1, Mob *mobs) // tem de receber o mapa desta forma pois é 2D
 {
-    // transformar num switch??
-    if (game->key_pressed == 'w' && valid_player_movement(1, colunas, mapa, player1, mobs) == 1)
+
+    switch (game->key_pressed)
     {
-        player1->last_direction_moved = 'w'; // guardar ultima direçao em que se moveu
-        player1->positionY--;
-        player1->character = '^';
-    }
-    else if (game->key_pressed == 's' && valid_player_movement(2, colunas, mapa, player1, mobs) == 1)
-    {
-        player1->last_direction_moved = 's';
-        player1->positionY++;
-        player1->character = 'v';
-    }
-    else if (game->key_pressed == 'a' && valid_player_movement(3, colunas, mapa, player1, mobs) == 1)
-    {
-        player1->last_direction_moved = 'a';
-        player1->positionX--;
-        player1->character = '<';
-    }
-    else if (game->key_pressed == 'd' && valid_player_movement(4, colunas, mapa, player1, mobs) == 1)
-    {
-        player1->last_direction_moved = 'd';
-        player1->positionX++;
-        player1->character = '>';
-    }
-    else if (game->key_pressed == 'x') // destruir paredes
-    {
-        do_destroy_wall(player1->last_direction_moved, player1->positionY, player1->positionX, linhas, colunas, mapa);
-    }
-    else if (game->key_pressed == 'e' && mapa[player1->positionY][player1->positionX + 1].visible_piece == ' ' && player1->trapNumber > 0) // colocar armadilhas no chao
-    {
-        mapa[player1->positionY][player1->positionX + 1].visible_piece = '^';
-        player1->trapNumber -= 1;
-    }
-    else if (game->key_pressed == 'r' && mapa[player1->positionY][player1->positionX + 1].visible_piece == ' ' && player1->nightstickNumber > 0) // usar luz
-    {
-        player1->usingNightStick = 1;
-        player1->nightstickNumber -= 1;
-    }
-    else if (game->key_pressed == 'q' && player1->aspirineNumber > 0) // usar aspirina
-    {
-        player1->aspirineNumber -= 1;
-        player1->hp += 25;
-    }
-    else if (game->key_pressed == 'p')
-    {
-        pause_win(linhas, colunas);
-    }
-    else if (game->key_pressed == 'b')
-    {
-        buy_menu_win(linhas, colunas, player1);
-    }
-    else if (game->key_pressed == 27)
-    {
-        game->game_over = 1;
+    case 'w':
+        if (valid_player_movement(1, colunas, mapa, player1, mobs) == 1)
+        {
+            player1->last_direction_moved = 'w'; // guardar ultima direçao em que se moveu
+            player1->positionY--;
+            player1->character = '^';
+        }
+        break;
+    case 's':
+        if (valid_player_movement(2, colunas, mapa, player1, mobs) == 1)
+        {
+            player1->last_direction_moved = 's';
+            player1->positionY++;
+            player1->character = 'v';
+        }
+        break;
+    case 'd':
+        if (valid_player_movement(4, colunas, mapa, player1, mobs) == 1)
+        {
+            player1->last_direction_moved = 'd';
+            player1->positionX++;
+            player1->character = '>';
+        }
+        break;
+    case 'a':
+        if (valid_player_movement(3, colunas, mapa, player1, mobs) == 1)
+        {
+            player1->last_direction_moved = 'a';
+            player1->positionX--;
+            player1->character = '<';
+        }
+        break;
+    case 'x':
+            do_destroy_wall(player1->last_direction_moved, player1->positionY, player1->positionX, linhas, colunas, mapa);
+        break;
+    case 'e':
+        if (mapa[player1->positionY][player1->positionX + 1].visible_piece == ' ' && player1->trapNumber > 0) // colocar armadilhas no chao
+        {
+            mapa[player1->positionY][player1->positionX + 1].visible_piece = '^';
+            player1->trapNumber -= 1;
+        }
+        break;
+    case 'r':
+        if (mapa[player1->positionY][player1->positionX + 1].visible_piece == ' ' && player1->nightstickNumber > 0) // usar luz
+        {
+            player1->usingNightStick = 1;
+            player1->nightstickNumber -= 1;
+        }
+        break;
+    case 'q':
+        if (player1->aspirineNumber > 0) // usar aspirina
+        {
+            player1->aspirineNumber -= 1;
+            player1->hp += 25;
+        }
+        break;
+    case 'p':
+            pause_win(linhas, colunas);
+        break;
+    case 'b':
+            buy_menu_win(linhas, colunas, player1);
+        break;
+    case 27:
+            game->game_over = 1;
+        break;
+
     }
 }
 void do_update_map_multi_player(int colunas, Map mapa[][colunas], int linhas, Game *game, Player *player1, Player *player2)
@@ -330,24 +338,24 @@ void do_add_score(int game_type, Flag *flag, Game *game, Player *player1, Player
     {
         if (player1->positionX == flag->positionX && player1->positionY == flag->positionY)
         {
-            player1->score++;         // incrementar 1 ao score
-            player1->money +=10;
-            game->is_flag_placed = 0; // dar reset a flag
+            player1->score++;
+            player1->money += 10;
+            game->is_flag_placed = 0;
         }
     }
     else
     {
         if (player1->positionX == flag->positionX && player1->positionY == flag->positionY)
         {
-            player1->score++;         // incrementar 1 ao score
-            player1->money +=10;
-            game->is_flag_placed = 0; // dar reset a flag
+            player1->score++;
+            player1->money += 10;
+            game->is_flag_placed = 0;
         }
         if (player2->positionX == flag->positionX && player2->positionY == flag->positionY)
         {
-            player2->score++;         // incrementar 1 ao score
-            player1->money +=10;
-            game->is_flag_placed = 0; // dar reset a flag
+            player2->score++;
+            player1->money += 10;
+            game->is_flag_placed = 0;
         }
     }
 }

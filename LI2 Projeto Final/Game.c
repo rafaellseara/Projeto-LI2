@@ -18,7 +18,7 @@ void do_check_nightstick(Game *game, Player *player1)
     }
 }
 
-// dar reset as variaveis do player
+
 void reset_player(Player *player1)
 {
     player1->hp = 100;
@@ -34,7 +34,7 @@ void reset_player(Player *player1)
     player1->nightstickNumber = 5;
 }
 
-// mandar para janela do scoreboard
+
 void go_to_scoreboard_win(Player *player1, int linhas, int colunas)
 {
     if (player1->score > 0)
@@ -43,12 +43,12 @@ void go_to_scoreboard_win(Player *player1, int linhas, int colunas)
         final_0_score_win(linhas, colunas);
 }
 
-// verificar se o jogador está vivo
+
 int player_is_alive(Player *player1)
 {
     return (player1->hp > 0 ? 1 : 0);
 }
-//verificar que o jogo ainda nao acabou
+
 int game_is_not_over(Game *game)
 {
     return (game->game_over == 0 ? 1 : 0);
@@ -64,16 +64,15 @@ void main_game_single_player(int linhas, int colunas, Map mapa[][colunas], Game 
             timeout(300);
             game->key_pressed = getch();
             do_structure_aplications_single_player(linhas, colunas, mapa, player1, mobs);
-            do_update_map_single_player(colunas, mapa, linhas, game, player1, mobs); // aqui fazemos o update do mapa sempre que o utilizador prima uma tecla
-            do_insert_flag(linhas, colunas, mapa, flag, game);                       // inserir a flag
+            do_update_map_single_player(colunas, mapa, linhas, game, player1, mobs); 
+            do_insert_flag(linhas, colunas, mapa, flag, game);                      
             do_add_score(1, flag, game, player1, player2);
-            do_print_map(linhas, colunas, mapa); // imprimimos o mapa para o utilizador
+            do_print_map(linhas, colunas, mapa); 
             do_mob_apps(colunas, mapa, player1, mobs);
             do_guns_aplications(linhas, colunas, mapa, game, mobs, bullet_player1, bullet_player2, player1, player2);
-            // adicionamos aqui o jogador para termos o mapa com as posiçoes de lagos e assim nao sobrepostas
             do_add_player(1, player1, player2);
             printMobs(mobs);
-            print_footer_single_player(player1); // imprimir caracteristicas do jogo no canto
+            print_footer_single_player(player1);
         }
         else
         {
@@ -149,14 +148,12 @@ void main_game_challenge(int linhas, int colunas, Map mapa[][colunas], Flag *fla
 
 void start_game_single_player(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Player *player1, Player *player2)
 {
-    do_print_map(linhas, colunas, mapa); // imprimimos o mapa inicial
+    do_print_map(linhas, colunas, mapa); 
     reset_player(player1);
-    // adicionamos aqui o jogador para termos o mapa com as posiçoes de lagos e assim nao sobrepostas
-    player1_position(linhas, colunas, player1); // acertar a posiçao do jogador
+    player1_position(linhas, colunas, player1);
     do_add_player(1, player1, player2);
     initializeMobs(linhas, colunas, mapa, mobs);
     printMobs(mobs);
-    // imprimir caracteristicas do jogo no canto
     print_footer_single_player(player1);
 }
 void start_game_multi_player(int linhas, int colunas, Map mapa[][colunas], Player *player1, Player *player2)

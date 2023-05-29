@@ -8,12 +8,6 @@
 
 #include "Menu.h"
 
-// fiz o player, o map, o guns, o mobs, o game, o menu
-
-// CONTINUA A DAR ERROS ARANDOABDBASLKDNASJDNLASKND+ASDJASNLDKAS
-
-// menu funciona bem mas nao começa o jogo
-// wtf is goin on
 
 int main()
 {

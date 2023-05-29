@@ -149,7 +149,6 @@ void sort_scoreboard_desafio()
 função que vai buscar os dados do scoreboard e imprime os no ecrã
 */
 
-
 // manual de instruções ------------------------------------------------------------------------------
 
 void exibirManualInstrucoes(int linhas, int colunas) 
@@ -582,6 +581,8 @@ void menu(int linhas, int colunas, Map mapa[][colunas], Mob *mobs, Game *game, F
                 break;
             case 2: // Opção "MANUAL DE INSTRUCOES"
                 exibirManualInstrucoes(linhas, colunas);
+                clear();
+                refresh();
                 break;
             case 3: // Opção "SCOREBOARD!"
                 multi_scoreboard_win(linhas, colunas);

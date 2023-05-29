@@ -3,24 +3,21 @@
 #include "Menu.h"
 #include "Guns.h"
 
-/*
-esta funçao troca as armas do jogadores
-*/
+
 void change_player_weapon(char c, Player *player1, Bullet *bullet_player1)
 {
-    // Se a gun no struct do jogador estiver 1->Punho 2->Pistola
-    // Para Trocar Armas
-    if (c == '1') // Trocar para soco
+
+    if (c == '1')
     {
         player1->gun = 1;
         bullet_player1->appearing = 0;
         bullet_player1->number = 0;
     }
-    else if (c == '2') // Troca para pistola
+    else if (c == '2')
     {
         player1->gun = 2;
     }
-    else if (c == '3' && player1->gun_three_on == 1) // Troca para teleguiada
+    else if (c == '3' && player1->gun_three_on == 1)
     {
         player1->gun = 3;
     }
@@ -35,15 +32,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player1->gun == 2)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 1; // para dar a direção da bala
-                bullet_player1->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 1; 
+                bullet_player1->number += 1;   
                 player1->ammo--;
             }
             else if (player1->gun == 3)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 1; // para dar a direção da bala
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 1; 
                 player1->ammo--;
             }
         }
@@ -51,15 +48,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player2->gun == 2)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 1; // para dar a direção da bala
-                bullet_player2->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 1; 
+                bullet_player2->number += 1;   
                 player2->ammo--;
             }
             else if (player2->gun == 3)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 1; // para dar a direção da bala
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 1; 
                 player2->ammo--;
             }
         }
@@ -69,15 +66,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player1->gun == 2)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 2; // para dar a direção da bala
-                bullet_player1->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 2; 
+                bullet_player1->number += 1;   
                 player1->ammo--;
             }
             else if (player1->gun == 3)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 2; // para dar a direção da bala
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 2; 
                 player1->ammo--;
             }
         }
@@ -85,15 +82,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player2->gun == 2)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 2; // para dar a direção da bala
-                bullet_player2->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 2; 
+                bullet_player2->number += 1;   
                 player2->ammo--;
             }
             else if (player2->gun == 3)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 2; // para dar a direção da bala
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 2; 
                 player2->ammo--;
             }
         }
@@ -103,15 +100,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player1->gun == 2)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 3; // para dar a direção da bala
-                bullet_player1->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 3; 
+                bullet_player1->number += 1;   
                 player1->ammo--;
             }
             else if (player1->gun == 3)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 3; // para dar a direção da bala
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 3; 
                 player1->ammo--;
             }
         }
@@ -119,15 +116,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player2->gun == 2)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 3; // para dar a direção da bala
-                bullet_player2->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 3; 
+                bullet_player2->number += 1;   
                 player2->ammo--;
             }
             else if (player2->gun == 3)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 3; // para dar a direção da bala
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 3; 
                 player2->ammo--;
             }
         }
@@ -137,15 +134,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player1->gun == 2)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 4; // para dar a direção da bala
-                bullet_player1->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 4; 
+                bullet_player1->number += 1;   
                 player1->ammo--;
             }
             else if (player1->gun == 3)
             {
-                bullet_player1->appearing = 1; // bala aparece
-                bullet_player1->direction = 4; // para dar a direção da bala
+                bullet_player1->appearing = 1; 
+                bullet_player1->direction = 4; 
                 player1->ammo--;
             }
         }
@@ -153,15 +150,15 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
         {
             if (player2->gun == 2)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 4; // para dar a direção da bala
-                bullet_player2->number += 1;   // aumenta a contagem de balas no mapa
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 4; 
+                bullet_player2->number += 1;   
                 player2->ammo--;
             }
             else if (player2->gun == 3)
             {
-                bullet_player2->appearing = 1; // bala aparece
-                bullet_player2->direction = 4; // para dar a direção da bala
+                bullet_player2->appearing = 1; 
+                bullet_player2->direction = 4; 
                 player2->ammo--;
             }
         }
@@ -171,11 +168,11 @@ void shot_fired(int direction, int player, Bullet *bullet_player1, Bullet *bulle
 
 void bullet_show(Game *game, Player *player1, Bullet *bullet_player1, Player *player2, Bullet *bullet_player2)
 {
-    if (game->key_pressed == ' ' && player1->gun == 2 && player1->ammo > 0 && player1->last_direction_moved == 'w' && bullet_player1->number == 0) // Caso haja munição e não haja mais balas no mapa a pistola ataca na direção do ultimo movimento
+    if (game->key_pressed == ' ' && player1->gun == 2 && player1->ammo > 0 && player1->last_direction_moved == 'w' && bullet_player1->number == 0) 
     {
         shot_fired(1, 1, bullet_player1, bullet_player2, player1, player2);
     }
-    else if (game->key_pressed == ' ' && player1->gun == 3 && player1->ammo > 0 && player1->last_direction_moved == 'w') // Caso haja munição e não haja mais balas no mapa a pistola ataca na direção do ultimo movimento
+    else if (game->key_pressed == ' ' && player1->gun == 3 && player1->ammo > 0 && player1->last_direction_moved == 'w') 
     {
         shot_fired(1, 1, bullet_player1, bullet_player2, player1, player2);
     }
@@ -206,7 +203,7 @@ void bullet_show(Game *game, Player *player1, Bullet *bullet_player1, Player *pl
 }
 void bullet_show_multi_player(Game *game, Player *player1, Player *player2, Bullet *bullet_player1, Bullet *bullet_player2)
 {
-    if (game->key_pressed == ' ' && player1->gun == 2 && player1->ammo > 0 && player1->last_direction_moved == 'w' && bullet_player1->number == 0) // Caso haja munição e não haja mais balas no mapa a pistola ataca na direção do ultimo movimento
+    if (game->key_pressed == ' ' && player1->gun == 2 && player1->ammo > 0 && player1->last_direction_moved == 'w' && bullet_player1->number == 0) 
     {
         shot_fired(1, 1, bullet_player1, bullet_player2, player1, player2);
     }
@@ -222,7 +219,7 @@ void bullet_show_multi_player(Game *game, Player *player1, Player *player2, Bull
     {
         shot_fired(4, 1, bullet_player1, bullet_player2, player1, player2);
     }
-    if (game->key_pressed == '0' && player2->gun == 2 && player2->ammo > 0 && player2->last_direction_moved == '8' && bullet_player2->number == 0) // Caso haja munição e não haja mais balas no mapa a pistola ataca na direção do ultimo movimento
+    if (game->key_pressed == '0' && player2->gun == 2 && player2->ammo > 0 && player2->last_direction_moved == '8' && bullet_player2->number == 0) 
     {
         shot_fired(1, 2, bullet_player1, bullet_player2, player1, player2);
     }
@@ -256,15 +253,15 @@ void bullet_position(Bullet *bullet_player1, Bullet *bullet_player2, Player *pla
 
 void bullet_collision(int colunas, Map mapa[][colunas], Bullet *bullet_player1, Bullet *bullet_player2)
 {
-    if (mapa[bullet_player1->positionY][bullet_player1->positionX].visible_piece == '#' || mapa[bullet_player1->positionY][bullet_player1->positionX].visible_piece == '!') // caso a posicão da bala seja igual à posicao de uma parede
+    if (mapa[bullet_player1->positionY][bullet_player1->positionX].visible_piece == '#' || mapa[bullet_player1->positionY][bullet_player1->positionX].visible_piece == '!') 
     {
-        bullet_player1->appearing = 0; // a bala desaparece
-        bullet_player1->number = 0;    // Assim a contagem volta a zero
+        bullet_player1->appearing = 0;
+        bullet_player1->number = 0;
     }
-    if (mapa[bullet_player2->positionY][bullet_player2->positionX].visible_piece == '#' || mapa[bullet_player2->positionY][bullet_player2->positionX].visible_piece == '!') // caso a posicão da bala seja igual à posicao de uma parede
+    if (mapa[bullet_player2->positionY][bullet_player2->positionX].visible_piece == '#' || mapa[bullet_player2->positionY][bullet_player2->positionX].visible_piece == '!') 
     {
-        bullet_player2->appearing = 0; // a bala desaparece
-        bullet_player2->number = 0;    // Assim a contagem volta a zero
+        bullet_player2->appearing = 0;
+        bullet_player2->number = 0;
     }
 }
 
@@ -401,8 +398,8 @@ int bullet_in_horizontal(Bullet *bullet_player1)
 
 void bullet_disappears(Bullet *bullet_player1)
 {
-    bullet_player1->appearing = 0; // a bala desaparece
-    bullet_player1->number = 0;    // Assim a contagem volta a zero
+    bullet_player1->appearing = 0;
+    bullet_player1->number = 0;
 }
 
 void update_player_score_money(Player *player1)
@@ -426,7 +423,7 @@ void bullet_hit_mobs(int linhas, int colunas, Map mapa[][colunas], Bullet *bulle
             {
                 bullet_disappears(bullet_player1);
                 mobs[i].hp -= 250;
-                if (mob_is_dead(mobs, i));
+                if (mob_is_dead(mobs, i))
                 {
                     update_player_score_money(player1);
                     update_mob(i, linhas, colunas, mapa, mobs);

@@ -71,7 +71,6 @@ void do_print_map(int linhas, int colunas, Map mapa[][colunas])
     {
         for (int j = 0; j < colunas; j++)
         {
-            // adicionar a parede e atribui a cor à parede
             if ((mapa[i][j].visible_piece) == '#')
             {
                 attron(COLOR_PAIR(1));
@@ -248,7 +247,127 @@ void print_footer_multi_player(int linhas, int colunas, Player *player1, Player 
 void print_footer_challenge(Player *player1)
 {
     attron(COLOR_PAIR(4));
-    mvprintw(0, 10, "Player1:    HP: %d  Score: %d  Gun: %d  Traps: %d  Ammo: %d  Nightsticks: %d", player1->hp, player1->score, player1->gun, player1->trapNumber, player1->ammo, player1->nightstickNumber);
+    mvprintw(0, 9, "|Player1|  ");
+    attroff(COLOR_PAIR(4));
+    if (player1->hp >= 90)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "          ");
+        attroff(COLOR_PAIR(11));
+    }
+    else if (player1->hp >= 80)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "         ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 32, " ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 70)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "        ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 31, "  ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 60)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "       ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 30, "   ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 50)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "      ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 29, "    ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 40)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "     ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 28, "     ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 30)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "    ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 27, "      ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 20)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "   ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 26, "       ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 10)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, "  ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 25, "        ");
+        attroff(COLOR_PAIR(4));
+    }
+    else if(player1->hp >= 0)
+    {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 20, "HP[");
+        attroff(COLOR_PAIR(4));
+        attron(COLOR_PAIR(11));
+        mvprintw(0, 23, " ");
+        attroff(COLOR_PAIR(11));
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 24, "         ");
+        attroff(COLOR_PAIR(4));
+    }
+    attron(COLOR_PAIR(4));
+    mvprintw(0, 33, "] Score: %d  Gun: %d  Traps: %d  Ammo: %d Aspirinas: %d Money: %d|", player1->score, player1->gun, player1->trapNumber, player1->ammo, player1->aspirineNumber, player1->money);
     attroff(COLOR_PAIR(4));
 }
 
