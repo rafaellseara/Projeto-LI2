@@ -18,7 +18,7 @@
 
 ## Developed by:
 
-[Rafael Seara](https://github.com/rafaellseara)
-[Fernando Pires](https://github.com/ferjpires)
-[Pedro Teixeira](https://github.com/PedroTe010)
-[Sara Silva](https://github.com/sarasilv-a)
+[Rafael Seara](https://github.com/rafaellseara)<br>
+[Fernando Pires](https://github.com/ferjpires)<br>
+[Pedro Teixeira](https://github.com/PedroTe010)<br>
+[Sara Silva](https://github.com/sarasilv-a)<br>
